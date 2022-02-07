@@ -38,6 +38,13 @@ resource "aws_iam_group" "modulegroups" {
   path = "/"
 }
 
+resource "aws_iam_user_group_membership" "moduleuser" {
+  for_each = { for user in var.users: user.name => user }
+  user = each.key
+
+  groups = each.value.groups
+}
+
 data "aws_iam_policy_document" "group_policy" {
   for_each = { for group in var.groups: group.name => group }
   statement {
