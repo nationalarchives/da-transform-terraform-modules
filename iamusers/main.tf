@@ -8,7 +8,7 @@ terraform {
 }
 
 resource "aws_iam_user" "moduleuser" {
-  for_each = var.users
+  for_each = { for user in var.users: user.name => user }
   name = each.value.name
   path = "/"
 }
@@ -33,13 +33,13 @@ resource "aws_iam_group_policy" "manage_own_creds" {
 }
 
 resource "aws_iam_group" "modulegroups" {
-  for_each = var.groups
+  for_each = { for group in var.groups: group.name => group }
   name = each.value.name
   path = "/"
 }
 
 data "aws_iam_policy_document" "group_policy" {
-  for_each = var.groups
+  for_each = { for group in var.groups: group.name => group }
   statement {
     sid = "1"
     effect = "Allow"
