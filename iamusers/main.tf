@@ -7,12 +7,15 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "aws" {}
+
 resource "aws_iam_user" "moduleuser" {
   for_each = { for user in var.users: user.name => user }
   name = each.value.name
   path = "/"
 }
 
+#tfsec:ignore:aws-iam-enforce-mfa ignore this group for this test as its intentionally not going to require mfa
 resource "aws_iam_group" "all_users" {
 	name = "all_users"
 }
@@ -29,7 +32,10 @@ resource "aws_iam_group_policy" "manage_own_creds" {
 	name = "manage_own_creds"
   group = aws_iam_group.all_users.name
 
-	policy = file("${path.module}/selfmanagepolicy.json")
+	policy = templatefile("${path.module}/selfmanagepolicy.json.tftpl",
+    {
+      accountnumber = data.aws_caller_identity.aws.account_id
+    })
 }
 
 resource "aws_iam_group" "modulegroups" {
