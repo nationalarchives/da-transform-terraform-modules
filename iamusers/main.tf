@@ -44,6 +44,8 @@ resource "aws_iam_user_group_membership" "moduleuser" {
 
   groups = each.value.groups
 
+  # we allow user group membership to be specified, this could include groups outside
+  # terraform but we should ensure any groups created are provisioned before this runs
   depends_on = [
     aws_iam_group.modulegroups,
   ]
@@ -57,6 +59,13 @@ data "aws_iam_policy_document" "group_policy" {
     actions = [ "sts:AssumeRole" ]
     resources = each.value.rolearns
   }
+}
+
+resource "aws_iam_group_policy" "group_policy" {
+  for_each = { for group in var.groups: group.name => group }
+  name = each.key
+  group = aws_iam_group.modulegroups[each.key]
+  policy = data.aws_iam_policy_document.group_policy[each.key].json
 }
 
 output "users" {
