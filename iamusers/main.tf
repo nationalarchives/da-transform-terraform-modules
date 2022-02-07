@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "group_policy" {
 resource "aws_iam_group_policy" "group_policy" {
   for_each = { for group in var.groups: group.name => group }
   name = each.key
-  group = aws_iam_group.modulegroups[each.key]
+  group = aws_iam_group.modulegroups[each.key].name
   policy = data.aws_iam_policy_document.group_policy[each.key].json
 }
 
