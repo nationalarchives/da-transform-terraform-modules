@@ -23,11 +23,5 @@ provider "aws" {
 
 terraform {
     backend "s3" {
-        role_arn        = "arn:aws:iam::454286877087:role/IAM_Admin_Role"
-        bucket          = "da-transform-terraform-state"
-        key             = "module/iamuser/terraform.tfstate"
-        region          = "eu-west-2"
-        dynamodb_table  = "da-transform-terraform-state"
-        encrypt         = true
     }
 }
