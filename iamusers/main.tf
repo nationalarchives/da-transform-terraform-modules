@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = ">= 3.74.0"
+    }
+  }
+}
+
 resource "aws_iam_user" "moduleuser" {
   for_each = toset(var.usernames)
   name = each.key
