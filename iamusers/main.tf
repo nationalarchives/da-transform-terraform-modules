@@ -43,6 +43,10 @@ resource "aws_iam_user_group_membership" "moduleuser" {
   user = each.key
 
   groups = each.value.groups
+
+  depends_on = [
+    aws_iam_group.modulegroups,
+  ]
 }
 
 data "aws_iam_policy_document" "group_policy" {
