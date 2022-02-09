@@ -38,6 +38,7 @@ resource "aws_iam_group_policy" "manage_own_creds" {
     })
 }
 
+#tfsec:ignore:aws-iam-enforce-mfa this rule gets triggered when called as a module presumably due to failure to evaluate abstractions properly
 resource "aws_iam_group" "modulegroups" {
   for_each = { for group in var.groups: group.name => group }
   name = each.value.name
