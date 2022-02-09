@@ -63,6 +63,11 @@ data "aws_iam_policy_document" "group_policy" {
     sid = "1"
     effect = "Allow"
     actions = [ "sts:AssumeRole" ]
+    condition { 
+      test = "Bool"
+      variable = "aws:MultiFactorAuthentication"
+      values = [ "true" ] 
+    }
     resources = each.value.rolearns
   }
 }
