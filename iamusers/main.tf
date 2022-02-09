@@ -65,7 +65,7 @@ data "aws_iam_policy_document" "group_policy" {
     actions = [ "sts:AssumeRole" ]
     condition { 
       test = "Bool"
-      variable = "aws:MultiFactorAuthentication"
+      variable = "aws:MultiFactorAuthPresent"
       values = [ "true" ] 
     }
     resources = each.value.rolearns
