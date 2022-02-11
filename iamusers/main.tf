@@ -55,6 +55,7 @@ resource "aws_iam_user_group_membership" "moduleuser" {
   # terraform but we should ensure any groups created are provisioned before this runs
   depends_on = [
     aws_iam_group.modulegroups,
+    aws_iam_user.moduleuser
   ]
 }
 
