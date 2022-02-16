@@ -2,7 +2,7 @@
 
 
 set -e
-
+export AWS_SDK_LOAD_CONFIG="true"
 go mod init test
 go mod tidy
 
