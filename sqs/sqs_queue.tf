@@ -16,3 +16,8 @@ resource "aws_sqs_queue" "tdr_message_deadletter_queue" {
   name = "${var.env}-tdr-message-deadletter-queue"
   sqs_managed_sse_enabled = true
 }
+
+output "tdr_sqs_queue_arn" {
+  value               = aws_sqs_queue.tdr_message_queue.arn
+  description         = "The ARN of the TDR Input SQS queue"
+}
