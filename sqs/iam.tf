@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "step_function_execution" {
   statement {
     actions = ["states:StartExecution"]
     effect = "Allow"
-    resources = "*"
+    resources = [ "*" ]
   }
 }
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
