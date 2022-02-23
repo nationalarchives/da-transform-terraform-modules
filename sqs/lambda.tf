@@ -1,7 +1,7 @@
 data "archive_file" "tdr_message_lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/tdr_message.py"
-  output_path = "./tdr_message.zip"
+  output_path = "${path.cwd}/tdr_message.zip"
 }
 
 resource "aws_lambda_function" "tdr_message_function" {
