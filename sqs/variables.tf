@@ -3,6 +3,8 @@ variable "env" {
 }
 
 variable "tdr_role_arn" {
+  description = "role ARN for TDR to submit to SQS queues"
+  type = string
 }
 
 variable "sfn_arn" {
