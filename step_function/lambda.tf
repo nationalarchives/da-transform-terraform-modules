@@ -1,7 +1,7 @@
 data "archive_file" "retrieve_bagit_lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/retrieve_bagit.py"
-  output_path = "${path.cwd}/retrieve_bagit.zip"
+  output_path = "${path.module}/retrieve_bagit.zip"
 }
 
 resource "aws_lambda_function" "retrieve_bagit_function" {
