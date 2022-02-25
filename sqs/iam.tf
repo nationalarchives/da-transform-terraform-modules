@@ -1,6 +1,6 @@
 # Lambda roles and policies
 resource "aws_iam_role" "tdr_message_lambda_role" {
-  name = "${var.env}tdr-message-lambda"
+  name = "${var.env}-tdr-message-lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
   inline_policy {
     name = "state_function_execution"
