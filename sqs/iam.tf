@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 
 data "aws_iam_policy_document" "tdr_sqs_policy" {
   statement {
-    actions = ["sqs:*"]
+    actions = ["sqs:SendMessage"]
     effect = "Allow"
     principals {
       type        = "AWS"
