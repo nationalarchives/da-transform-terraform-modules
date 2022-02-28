@@ -39,7 +39,7 @@ data "aws_iam_policy" "managed_lambda_sqs" {
 
 data "aws_iam_policy_document" "tdr_sqs_policy" {
   statement {
-    actions = ["sqs:SendMessage"]
+    actions = ["sqs:*"]
     effect = "Allow"
     principals {
       type        = "AWS"

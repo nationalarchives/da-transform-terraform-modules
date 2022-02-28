@@ -68,3 +68,11 @@ data "aws_iam_policy_document" "step_function_policies" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
+  statement {
+    actions = [ "lambda:InvokeFunction" ]
+    effect = "Allow"
+    resources = [ aws_lambda_function.retrieve_bagit_function.arn ]
+  }
+}
