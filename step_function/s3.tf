@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "tdr_bagit_out" {
 
 resource "aws_s3_bucket_policy" "name" {
   bucket = aws_s3_bucket.tdr_bagit_out.bucket
-  
+  policy = data.aws_iam_policy_document.tdr_out_bucket_policy.json
 }
 
 resource "aws_s3_bucket_acl" "tdr_bagit_out" {
