@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "tdr_out_bucket_policy" {
     actions = [ "s3:PutObject" ]
 
     principals {
-      type = "AWS"
+      type = "Service"
       identifiers = [ aws_lambda_function.retrieve_bagit_function.arn ]
     }
 
