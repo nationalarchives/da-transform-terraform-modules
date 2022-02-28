@@ -21,6 +21,23 @@ resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 }
 
+# S3 Policy
+
+data "aws_iam_policy_document" "tdr_out_bucket_policy" {
+  statement {
+    actions = [ "s3:PutObject" ]
+
+    principals {
+      type = "AWS"
+      identifiers = [ aws_lambda_function.retrieve_bagit_function.arn ]
+    }
+
+    resources = [ "${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn ]
+  }
+
+
+}
+
 # StateFunction roles and policies
 
 resource "aws_iam_role" "tdr_state_machine_role" {
