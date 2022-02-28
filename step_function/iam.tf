@@ -28,8 +28,8 @@ data "aws_iam_policy_document" "tdr_out_bucket_policy" {
     actions = [ "s3:PutObject" ]
 
     principals {
-      type = "Service"
-      identifiers = [ aws_lambda_function.retrieve_bagit_function.arn ]
+      type = "AWS"
+      identifiers = [ aws_lambda_function.retrieve_bagit_function.role ]
     }
 
     resources = [ "${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn ]
