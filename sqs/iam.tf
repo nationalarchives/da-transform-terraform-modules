@@ -10,7 +10,7 @@ resource "aws_iam_role" "tdr_message_lambda_role" {
 
 resource "aws_iam_role_policy_attachment" "lambda_role_policy" {
   role = aws_iam_role.tdr_message_lambda_role.name
-  policy_arn = data.aws_iam_policy.managed_lambda_sqs.arn
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 }
 
 data "aws_iam_policy_document" "step_function_execution" {
@@ -31,9 +31,6 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy" "managed_lambda_sqs" {
-  arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
-}
 
 # SQS Queue policy document
 

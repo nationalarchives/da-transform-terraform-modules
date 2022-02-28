@@ -16,6 +16,11 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
+  role = aws_iam_role.retrieve_bagit_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+}
+
 # StateFunction roles and policies
 
 resource "aws_iam_role" "tdr_state_machine_role" {
