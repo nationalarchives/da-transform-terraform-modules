@@ -25,6 +25,10 @@ resource "aws_iam_role" "tdr_state_machine_role" {
     name = "${var.env}-state-function-logs-policy"
     policy = data.aws_iam_policy_document.step_function_policies.json
   }
+  inline_policy {
+    name = "${var.env}-state-function-lambda-policy"
+    policy = data.aws_iam_policy_document.state_fucntion_lambda_policy.json
+  }
 }
 
 
