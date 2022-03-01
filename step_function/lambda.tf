@@ -1,15 +1,15 @@
-data "archive_file" "retrieve_bagit_lambda_zip" {
-  type        = "zip"
-  source_file = "${path.module}/retrieve_bagit.py"
-  output_path = "${path.module}/retrieve_bagit.zip"
-}
-
 resource "aws_lambda_function" "retrieve_bagit_function" {
-  filename = data.archive_file.retrieve_bagit_lambda_zip.output_path
+  image_uri = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tdr-to-temporary-s3:latest"
+  package_type = "Image"
   function_name = "${var.env}-retrive-tdr-bagit"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
-  handler = "retrieve_bagit.lambda_handler"
-  source_code_hash = data.archive_file.retrieve_bagit_lambda_zip.output_base64sha256
+  handler = "tdr_to_temporary_s3.handler"
   runtime = "python3.8"
   timeout = 30
+
+  environment {
+    variables = {
+      "S3_TEMPORARY_BUCKET" = aws_s3_bucket.tdr_bagit_out.bucket
+    }
+  }
 }
