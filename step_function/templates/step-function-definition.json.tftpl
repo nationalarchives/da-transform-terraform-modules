@@ -4,7 +4,7 @@
     "States": {
       "BagIt checksum validation": {
         "Type": "Task",
-        "Resource": "aws_lambda_function.retrieve_bagit_function.arn",
+        "Resource": "${aws_lambda_function.retrieve_bagit_function.arn}",
         "Next": "Files checksum validation",
         "Catch": [
           {
