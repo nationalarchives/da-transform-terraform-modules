@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "tdr_bagit_out" {
-  bucket = "${var.env}tdr-bagit-out"
+  bucket = "${var.env}-tdr-bagit-out"
 
 }
 

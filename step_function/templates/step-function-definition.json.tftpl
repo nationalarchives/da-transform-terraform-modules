@@ -1,0 +1,130 @@
+{
+    "Comment": "State machine for the TE to process the BagIt package",
+    "StartAt": "BagIt checksum validation",
+    "States": {
+      "BagIt checksum validation": {
+        "Type": "Task",
+        "Resource": "aws_lambda_function.retrieve_bagit_function.arn",
+        "Next": "Files checksum validation",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "Next": "Bagit validation error?",
+            "Comment": "TaskFailed"
+          }
+        ]
+      },
+      "Bagit validation error?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.max_retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "SendMessage to TDR for BagIt"
+          },
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.max_retries",
+                "NumericGreaterThanEquals": 3
+              }
+            ],
+            "Next": "BagIt checksum failed"
+          }
+        ]
+      },
+      "SendMessage to TDR for BagIt": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sqs:sendMessage",
+        "Parameters": {
+          "MessageBody.$": "$",
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+        },
+        "End": true
+      },
+      "Files checksum validation": {
+        "Type": "Task",
+        "Resource": "arn:aws:lambda:eu-west-2:882876621099:function:dev-tdr-sqs-message:$LATEST",
+        "Next": "PlaceholderForJudgementParser",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "Next": "Files validation errors?"
+          }
+        ]
+      },
+      "Files validation errors?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.max_retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "SendMessage to TDR for files"
+          },
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.max_retries",
+                "NumericGreaterThanEquals": 3
+              }
+            ],
+            "Next": "Files checksum failed"
+          }
+        ]
+      },
+      "SendMessage to TDR for files": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sqs:sendMessage",
+        "Parameters": {
+          "MessageBody.$": "$",
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+        },
+        "End": true
+      },
+      "PlaceholderForJudgementParser": {
+        "Type": "Pass",
+        "Next": "PlaceHolderForEditorialIntegration"
+      },
+      "PlaceHolderForEditorialIntegration": {
+        "Type": "Pass",
+        "Next": "PlaceHolderForSNSToEditorial"
+      },
+      "PlaceHolderForSNSToEditorial": {
+        "Type": "Succeed"
+      },
+      "BagIt checksum failed": {
+        "Type": "Fail"
+      },
+      "Files checksum failed": {
+        "Type": "Fail"
+      }
+    }
+  }
