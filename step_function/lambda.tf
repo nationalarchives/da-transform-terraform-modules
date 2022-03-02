@@ -3,8 +3,6 @@ resource "aws_lambda_function" "retrieve_bagit_function" {
   package_type = "Image"
   function_name = "${var.env}-retrive-tdr-bagit"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
-  handler = "tdr_to_temporary_s3.handler"
-  runtime = "python3.8"
   timeout = 30
 
   environment {
