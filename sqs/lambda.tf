@@ -1,16 +1,8 @@
-data "archive_file" "tdr_message_lambda_zip" {
-  type        = "zip"
-  source_file = "${path.module}/tdr_message.py"
-  output_path = "${path.module}/tdr_message.zip"
-}
-
 resource "aws_lambda_function" "tdr_message_function" {
-  filename = data.archive_file.tdr_message_lambda_zip.output_path
+  image_uri = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/te-step-function-trigger:latest"
+  package_type = "Image"
   function_name = "${var.env}-tdr-sqs-message"
   role = aws_iam_role.tdr_message_lambda_role.arn
-  handler = "tdr_message.lambda_handler"
-  source_code_hash = data.archive_file.tdr_message_lambda_zip.output_base64sha256
-  runtime = "python3.8"
   timeout = 30
 
   environment {
