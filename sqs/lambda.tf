@@ -2,7 +2,7 @@ resource "aws_lambda_function" "tdr_message_function" {
   image_uri     = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-step-function-trigger:latest"
   package_type  = "Image"
   function_name = "${var.env}-te-step-function-trigger"
-  role          = aws_iam_role.tdr_message_lambda_role.arn
+  role          = "arn:aws:iam::882876621099:role/dev-tdr-message-lambda"
   timeout       = 30
 
   environment {
