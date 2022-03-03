@@ -5,15 +5,7 @@
       "BagIt checksum validation": {
         "Type": "Task",
         "Resource": "${bagit_checksum_lambda}",
-        "Next": "Files checksum validation",
-        "Catch": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "Next": "Bagit validation error?"
-          }
-        ]
+        "Next": "Bagit validation error?"
       },
       "Bagit validation error?": {
         "Type": "Choice",
@@ -44,7 +36,13 @@
             ],
             "Next": "BagIt checksum failed"
           }
-        ]
+        ],
+        "Default": "Files checksum validation"
+      },
+      "Files checksum validation": {
+        "Type": "Task",
+        "Resource": "${files_checksum_lambda}",
+        "Next": "Files validation errors?"
       },
       "SendMessage to TDR for BagIt": {
         "Type": "Task",
@@ -53,24 +51,6 @@
           "MessageBody.$": "$",
           "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
         },
-        "End": true
-      },
-      "Files checksum validation": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::lambda:invoke",
-        "OutputPath": "$.Payload",
-        "Parameters": {
-          "Payload.$": "$",
-        "FunctionName": "${files_checksum_lambda}"
-        },
-        "Catch": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "Next": "Files validation errors?"
-          }
-        ],
         "End": true
       },
       "Files validation errors?": {
@@ -102,7 +82,20 @@
             ],
             "Next": "Files checksum failed"
           }
-        ]
+        ],
+        "Default": "PlaceHolder"
+      },
+      "PlaceHolder": {
+        "Type": "Pass",
+        "Next": "PlaceHolder2"
+      },
+      "PlaceHolder2": {
+        "Type": "Pass",
+        "Next": "PlaceHolder3"
+      },
+      "PlaceHolder3": {
+        "Type": "Pass",
+        "End": true
       },
       "SendMessage to TDR for files": {
         "Type": "Task",
