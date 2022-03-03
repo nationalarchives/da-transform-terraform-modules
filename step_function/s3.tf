@@ -10,7 +10,7 @@ resource "aws_s3_bucket_policy" "name" {
 
 resource "aws_s3_bucket_acl" "tdr_bagit_out" {
   bucket = aws_s3_bucket.tdr_bagit_out.id
-  acl = "private"
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "tdr_bagit_out" {

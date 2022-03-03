@@ -58,7 +58,7 @@
       },
       "Files checksum validation": {
         "Type": "Task",
-        "Resource": "arn:aws:lambda:eu-west-2:882876621099:function:dev-tdr-sqs-message:$LATEST",
+        "Resource": "{files_checksum_lambda}",
         "Next": "PlaceholderForJudgementParser",
         "Catch": [
           {
