@@ -4,8 +4,16 @@
     "States": {
       "BagIt checksum validation": {
         "Type": "Task",
-        "Resource": "${bagit_checksum_lambda}",
-        "Next": "Bagit validation error?"
+        "Resource": "arn:aws:lambda:eu-west-2:882876621099:function:dev-te-bagit-checksum-validation:$LATEST",
+        "Next": "Files checksum validation",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "Next": "Bagit validation error?"
+          }
+        ]
       },
       "Bagit validation error?": {
         "Type": "Choice",
@@ -36,20 +44,27 @@
             ],
             "Next": "BagIt checksum failed"
           }
-        ],
-        "Default": "Files checksum validation"
+        ]
       },
       "Files checksum validation": {
         "Type": "Task",
-        "Resource": "${files_checksum_lambda}",
-        "Next": "Files validation errors?"
+        "Resource": "arn:aws:lambda:eu-west-2:882876621099:function:dev-te-files-checksum-validation:$LATEST",
+        "Next": "Pass (1)",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "Next": "Files validation errors?"
+          }
+        ]
       },
       "SendMessage to TDR for BagIt": {
         "Type": "Task",
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-te-tdr-in"
         },
         "End": true
       },
@@ -82,18 +97,17 @@
             ],
             "Next": "Files checksum failed"
           }
-        ],
-        "Default": "PlaceHolder"
+        ]
       },
-      "PlaceHolder": {
+      "Pass (1)": {
         "Type": "Pass",
-        "Next": "PlaceHolder2"
+        "Next": "Pass"
       },
-      "PlaceHolder2": {
+      "Pass": {
         "Type": "Pass",
-        "Next": "PlaceHolder3"
+        "Next": "Pass (2)"
       },
-      "PlaceHolder3": {
+      "Pass (2)": {
         "Type": "Pass",
         "End": true
       },
@@ -102,7 +116,7 @@
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-te-tdr-in"
         },
         "End": true
       },
