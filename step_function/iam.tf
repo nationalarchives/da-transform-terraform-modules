@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
 
 data "aws_iam_policy_document" "tdr_out_bucket_policy" {
   statement {
-    actions = ["s3:PutObject"]
+    actions = ["s3:PutObject", "s3:GetObject"]
 
     principals {
       type        = "AWS"
