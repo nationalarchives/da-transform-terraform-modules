@@ -23,20 +23,20 @@ resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
 
 # S3 Policy
 
-# data "aws_iam_policy_document" "tdr_out_bucket_policy" {
-#   statement {
-#     actions = ["s3:PutObject"]
+data "aws_iam_policy_document" "tdr_out_bucket_policy" {
+  statement {
+    actions = ["s3:PutObject"]
 
-#     principals {
-#       type        = "AWS"
-#       identifiers = [aws_lambda_function.retrieve_bagit_function.role]
-#     }
+    principals {
+      type        = "AWS"
+      identifiers = [aws_lambda_function.retrieve_bagit_function.role]
+    }
 
-#     resources = ["${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn]
-#   }
+    resources = ["${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn]
+  }
 
 
-# }
+}
 
 # StateFunction roles and policies
 
