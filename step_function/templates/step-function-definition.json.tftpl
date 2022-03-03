@@ -15,6 +15,31 @@
           }
         ]
       },
+      "Files checksum validation": {
+        "Type": "Task",
+        "Resource": "${files_checksum_lambda}",
+        "Next": "ParserFunctionPlaceHolder",
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "Next": "Files validation errors?"
+          }
+        ]
+      },
+      "ParserFunctionPlaceHolder": {
+        "Type": "Pass",
+        "Next": "EditorialFunctionPlaceholder"
+      },
+      "EditorialFunctionPlaceholder": {
+        "Type": "Pass",
+        "Next": "SNSPlaceHolder"
+      },
+      "SNSPlaceHolder": {
+        "Type": "Pass",
+        "End": true
+      },
       "Bagit validation error?": {
         "Type": "Choice",
         "Choices": [
@@ -46,25 +71,12 @@
           }
         ]
       },
-      "Files checksum validation": {
-        "Type": "Task",
-        "Resource": "${files_checksum_lambda}",
-        "Next": "Pass (1)",
-        "Catch": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "Next": "Files validation errors?"
-          }
-        ]
-      },
       "SendMessage to TDR for BagIt": {
         "Type": "Task",
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-te-tdr-in"
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
         },
         "End": true
       },
@@ -99,24 +111,12 @@
           }
         ]
       },
-      "Pass (1)": {
-        "Type": "Pass",
-        "Next": "Pass"
-      },
-      "Pass": {
-        "Type": "Pass",
-        "Next": "Pass (2)"
-      },
-      "Pass (2)": {
-        "Type": "Pass",
-        "End": true
-      },
       "SendMessage to TDR for files": {
         "Type": "Task",
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-te-tdr-in"
+          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
         },
         "End": true
       },
