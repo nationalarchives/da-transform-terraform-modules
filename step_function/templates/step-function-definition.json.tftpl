@@ -11,8 +11,7 @@
             "ErrorEquals": [
               "States.TaskFailed"
             ],
-            "Next": "Bagit validation error?",
-            "Comment": "TaskFailed"
+            "Next": "Bagit validation error?"
           }
         ]
       },
@@ -58,8 +57,12 @@
       },
       "Files checksum validation": {
         "Type": "Task",
-        "Resource": "${files_checksum_lambda}",
-        "Next": "PlaceholderForJudgementParser",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+        "FunctionName": "${files_checksum_lambda}"
+        },
         "Catch": [
           {
             "ErrorEquals": [
@@ -67,7 +70,8 @@
             ],
             "Next": "Files validation errors?"
           }
-        ]
+        ],
+        "End": true
       },
       "Files validation errors?": {
         "Type": "Choice",
@@ -108,17 +112,6 @@
           "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
         },
         "End": true
-      },
-      "PlaceholderForJudgementParser": {
-        "Type": "Pass",
-        "Next": "PlaceHolderForEditorialIntegration"
-      },
-      "PlaceHolderForEditorialIntegration": {
-        "Type": "Pass",
-        "Next": "PlaceHolderForSNSToEditorial"
-      },
-      "PlaceHolderForSNSToEditorial": {
-        "Type": "Succeed"
       },
       "BagIt checksum failed": {
         "Type": "Fail"
