@@ -22,12 +22,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tdr_bagit_out" {
   }
 }
 
-resource "aws_s3_bucket_versioning" "tdr_bagit_out" {
-  bucket = aws_s3_bucket.tdr_bagit_out.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+# resource "aws_s3_bucket_versioning" "tdr_bagit_out" {
+#   bucket = aws_s3_bucket.tdr_bagit_out.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
 
 resource "aws_s3_bucket_public_access_block" "tdr_bagit_out" {
 
