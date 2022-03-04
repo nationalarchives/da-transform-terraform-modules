@@ -5,26 +5,30 @@
       "BagIt checksum validation": {
         "Type": "Task",
         "Resource": "${bagit_checksum_lambda}",
-        "Next": "Files checksum validation",
-        "Catch": [
+        "Next": "Bagit validation error?",
+        "Retry": [
           {
             "ErrorEquals": [
               "States.TaskFailed"
             ],
-            "Next": "Bagit validation error?"
+            "BackoffRate": 2,
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3
           }
         ]
       },
       "Files checksum validation": {
         "Type": "Task",
         "Resource": "${files_checksum_lambda}",
-        "Next": "ParserFunctionPlaceHolder",
-        "Catch": [
+        "Next": "Files validation errors?",
+        "Retry": [
           {
             "ErrorEquals": [
               "States.TaskFailed"
             ],
-            "Next": "Files validation errors?"
+            "BackoffRate": 2,
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3
           }
         ]
       },
@@ -50,7 +54,7 @@
                 "BooleanEquals": true
               },
               {
-                "Variable": "$.max_retries",
+                "Variable": "$.output-message.number-of-retries",
                 "NumericLessThan": 3
               }
             ],
@@ -63,22 +67,28 @@
                 "BooleanEquals": true
               },
               {
-                "Variable": "$.max_retries",
+                "Variable": "$.output-message.number-of-retries",
                 "NumericGreaterThanEquals": 3
+              },
+              {
+                "Variable": "$.output-message.number-of-retries",
+                "NumericLessThan": 1
               }
             ],
             "Next": "BagIt checksum failed"
           }
-        ]
+        ],
+        "Default": "Files checksum validation"
       },
       "SendMessage to TDR for BagIt": {
         "Type": "Task",
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+          "QueueUrl": "${tdr_sqs_queue_endpoint}"
         },
-        "End": true
+        "End": true,
+        "InputPath": "$.output-message"
       },
       "Files validation errors?": {
         "Type": "Choice",
@@ -90,7 +100,7 @@
                 "BooleanEquals": true
               },
               {
-                "Variable": "$.max_retries",
+                "Variable": "$.output-message.number_of_retries",
                 "NumericLessThan": 3
               }
             ],
@@ -103,22 +113,28 @@
                 "BooleanEquals": true
               },
               {
-                "Variable": "$.max_retries",
+                "Variable": "$.output-message.number_of_retries",
                 "NumericGreaterThanEquals": 3
+              },
+              {
+                "Variable": "$.output-message.number_of_retries",
+                "NumericLessThan": 1
               }
             ],
             "Next": "Files checksum failed"
           }
-        ]
+        ],
+        "Default": "ParserFunctionPlaceHolder"
       },
       "SendMessage to TDR for files": {
         "Type": "Task",
         "Resource": "arn:aws:states:::sqs:sendMessage",
         "Parameters": {
           "MessageBody.$": "$",
-          "QueueUrl": "https://sqs.eu-west-2.amazonaws.com/882876621099/dev-tdr-message"
+          "QueueUrl": "${tdr_sqs_queue_endpoint}"
         },
-        "End": true
+        "End": true,
+        "InputPath": "$.output-message"
       },
       "BagIt checksum failed": {
         "Type": "Fail"

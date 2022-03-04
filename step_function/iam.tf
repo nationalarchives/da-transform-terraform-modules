@@ -104,4 +104,12 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
       aws_lambda_function.bagit_files_checksum_function.arn
     ]
   }
+
+  statement {
+    actions = ["sqs:SendMessage"]
+    effect  = "Allow"
+    resources = [
+      var.tdr_sqs_queue_arn
+    ]
+  }
 }
