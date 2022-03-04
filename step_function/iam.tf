@@ -105,11 +105,11 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     ]
   }
 
-  statement {
-    actions = ["sqs:SendMessage"]
-    effect  = "Allow"
-    resources = [
-      var.tdr_sqs_queue_arn
-    ]
-  }
+  # statement {
+  #   actions = ["sqs:SendMessage"]
+  #   effect  = "Allow"
+  #   resources = [
+  #     var.tdr_sqs_queue_arn
+  #   ]
+  # }
 }
