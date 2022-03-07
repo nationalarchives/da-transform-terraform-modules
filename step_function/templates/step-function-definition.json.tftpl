@@ -64,21 +64,17 @@
             "And": [
               {
                 "Variable": "$.error",
-                "BooleanEquals": true
+                "BooleanEquals": false
               },
               {
                 "Variable": "$.output-message.number-of-retries",
-                "NumericGreaterThanEquals": 3
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 1
+                "NumericLessThan": 3
               }
             ],
-            "Next": "BagIt checksum failed"
+            "Next": "Files checksum validation"
           }
         ],
-        "Default": "Files checksum validation"
+        "Default": "BagIt checksum failed"
       },
       "SendMessage to TDR for BagIt": {
         "Type": "Task",
@@ -110,21 +106,17 @@
             "And": [
               {
                 "Variable": "$.error",
-                "BooleanEquals": true
+                "BooleanEquals": false
               },
               {
                 "Variable": "$.output-message.number-of-retries",
-                "NumericGreaterThanEquals": 3
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 1
+                "NumericLessThan": 3
               }
             ],
-            "Next": "Files checksum failed"
+            "Next": "ParserFunctionPlaceHolder"
           }
         ],
-        "Default": "ParserFunctionPlaceHolder"
+        "Default": "Files checksum failed"
       },
       "SendMessage to TDR for files": {
         "Type": "Task",
