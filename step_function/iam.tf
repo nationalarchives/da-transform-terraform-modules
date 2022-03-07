@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "step_function_policies" {
     ]
 
     effect    = "Allow"
-    resources = ["*"]
+    resources = ["arn:aws:logs:*:*:*"]
   }
 
   statement {

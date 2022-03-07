@@ -38,5 +38,8 @@ terraform.rc
 # Ignore function zip files
 *.zip
 
-/deployment
-/hello_world
+# Igmore files produced by local terratest
+
+go.sum
+
+
