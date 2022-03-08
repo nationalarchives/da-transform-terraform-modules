@@ -112,4 +112,14 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
       var.tdr_sqs_queue_arn
     ]
   }
+
+  statement {
+    actions = [ "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey" ]
+    effect = "Allow"
+    resources = [ "arn:aws:kms:eu-west-2:229554778675:key/b05401ed-cc76-46f6-bf2c-76cb0a859542" ]
+  }
 }
