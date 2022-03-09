@@ -1,0 +1,138 @@
+{
+    "Comment": "State machine for the TE to process the BagIt package",
+    "StartAt": "BagIt checksum validation",
+    "States": {
+      "BagIt checksum validation": {
+        "Type": "Task",
+        "Resource": "${bagit_checksum_lambda}",
+        "Next": "Bagit validation error?",
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "BackoffRate": 2,
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3
+          }
+        ]
+      },
+      "Files checksum validation": {
+        "Type": "Task",
+        "Resource": "${files_checksum_lambda}",
+        "Next": "Files validation errors?",
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "BackoffRate": 2,
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3
+          }
+        ]
+      },
+      "ParserFunctionPlaceHolder": {
+        "Type": "Pass",
+        "Next": "EditorialFunctionPlaceholder"
+      },
+      "EditorialFunctionPlaceholder": {
+        "Type": "Pass",
+        "Next": "SNSPlaceHolder"
+      },
+      "SNSPlaceHolder": {
+        "Type": "Pass",
+        "End": true
+      },
+      "Bagit validation error?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.output-message.number-of-retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "SendMessage to TDR for BagIt"
+          },
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": false
+              },
+              {
+                "Variable": "$.output-message.number-of-retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "Files checksum validation"
+          }
+        ],
+        "Default": "BagIt checksum failed"
+      },
+      "SendMessage to TDR for BagIt": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sqs:sendMessage",
+        "Parameters": {
+          "MessageBody.$": "$",
+          "QueueUrl": "${tdr_sqs_queue_endpoint}"
+        },
+        "End": true,
+        "InputPath": "$.output-message"
+      },
+      "Files validation errors?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": true
+              },
+              {
+                "Variable": "$.output-message.number-of-retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "SendMessage to TDR for files"
+          },
+          {
+            "And": [
+              {
+                "Variable": "$.error",
+                "BooleanEquals": false
+              },
+              {
+                "Variable": "$.output-message.number-of-retries",
+                "NumericLessThan": 3
+              }
+            ],
+            "Next": "ParserFunctionPlaceHolder"
+          }
+        ],
+        "Default": "Files checksum failed"
+      },
+      "SendMessage to TDR for files": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sqs:sendMessage",
+        "Parameters": {
+          "MessageBody.$": "$",
+          "QueueUrl": "${tdr_sqs_queue_endpoint}"
+        },
+        "End": true,
+        "InputPath": "$.output-message"
+      },
+      "BagIt checksum failed": {
+        "Type": "Fail"
+      },
+      "Files checksum failed": {
+        "Type": "Fail"
+      }
+    }
+  }
