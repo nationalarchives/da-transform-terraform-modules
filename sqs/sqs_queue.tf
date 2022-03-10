@@ -31,7 +31,7 @@ resource "aws_sqs_queue_policy" "editorial_message_queue_policy" {
   policy    = data.aws_iam_policy_document.editorial_sqs_policy.json
 }
 
-resource "aws_sqs_queue" "editorial_retry_deadlette_queue" {
+resource "aws_sqs_queue" "editorial_retry_deadletter_queue" {
   name                    = "${var.env}-te-editorial-retry-deadlette-queue"
   sqs_managed_sse_enabled = true
 }
