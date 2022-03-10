@@ -7,8 +7,13 @@
         "Choices": [
             {
             "Variable": "$.eventSourceARN",
-            "StringMatches": "${dev_tdr_trigger_queue_arn}",
+            "StringMatches": "${tdr_trigger_queue_arn}",
             "Next": "Pass"
+            },
+            {
+            "Variable": "$.eventSourceARN",
+            "StringMatches": "${editorial_retry_trigger_arn}",
+            "Next": "EditorialRetryMessage"
             }
         ]
       },
@@ -32,7 +37,8 @@
             "IntervalSeconds": 1,
             "MaxAttempts": 3
           }
-        ]
+        ],
+        "InputPath": "$.body"
       },
       "Files checksum validation": {
         "Type": "Task",
@@ -51,7 +57,8 @@
       },
       "ParserFunctionPlaceHolder": {
         "Type": "Pass",
-        "Next": "EditorialFunctionPlaceholder"
+        "Next": "EditorialFunctionPlaceholder",
+        "InputPath": "$.body"
       },
       "EditorialFunctionPlaceholder": {
         "Type": "Pass",
@@ -134,6 +141,13 @@
           }
         ],
         "Default": "Files checksum failed"
+      },
+      "EditorialRetryMessage": {
+        "Type": "Pass",
+        "Next": "ParserFunctionPlaceHolder",
+        "Parameters": {
+          "body.$": "States.StringToJson($.body)"
+        }
       },
       "SendMessage to TDR for files": {
         "Type": "Task",

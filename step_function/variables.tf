@@ -18,7 +18,12 @@ variable "tdr_queue_kms_key" {
   type = string
 }
 
-variable "dev_tdr_trigger_queue_arn" {
+variable "tdr_trigger_queue_arn" {
   description = "ARN of the tdr trigger queue"
+  type = string
+}
+
+variable "editorial_retry_trigger_arn" {
+  description = "ARN of the editorial retry trigger queue"
   type = string
 }
