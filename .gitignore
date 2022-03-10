@@ -39,6 +39,7 @@ terraform.rc
 backend-*.conf
 # Ignore function zip files
 *.zip
+*.py
 
 # Igmore files produced by local terratest
 

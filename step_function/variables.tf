@@ -1,14 +1,24 @@
 variable "env" {
   description = "Name of the environment to deploy"
-  type = string
+  type        = string
 }
 
 variable "tdr_sqs_queue_endpoint" {
   description = "Endpoint of the TDR SQS Queue for the retry message"
-  type = string
+  type        = string
 }
 
 variable "tdr_sqs_queue_arn" {
   description = "ARN of the TDR SQS Queue for the retry message"
+  type        = string
+}
+
+variable "tdr_queue_kms_key" {
+  description = "ARN of the KMS Key for TDR SQS Queue "
+  type = string
+}
+
+variable "dev_tdr_trigger_queue_arn" {
+  description = "ARN of the tdr trigger queue"
   type = string
 }

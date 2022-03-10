@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
 
 data "aws_iam_policy_document" "tdr_out_bucket_policy" {
   statement {
-    actions = [ "s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
+    actions = ["s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
 
     principals {
       type        = "AWS"
@@ -114,12 +114,14 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
   }
 
   statement {
-    actions = [ "kms:Encrypt",
+    actions = [
+      "kms:Encrypt",
       "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey" ]
-    effect = "Allow"
-    resources = [ "arn:aws:kms:eu-west-2:229554778675:key/b05401ed-cc76-46f6-bf2c-76cb0a859542" ]
+    "kms:GenerateDataKey*", 
+    ]
+    effect    = "Allow"
+    resources = [
+      var.tdr_queue_kms_key 
+    ]
   }
 }
