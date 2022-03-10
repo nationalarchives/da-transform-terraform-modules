@@ -5,7 +5,7 @@ resource "aws_sfn_state_machine" "tdr_state_machine" {
     bagit_checksum_lambda  = aws_lambda_function.retrieve_bagit_function.arn
     files_checksum_lambda  = aws_lambda_function.bagit_files_checksum_function.arn
     tdr_sqs_queue_endpoint = var.tdr_sqs_queue_endpoint
-    tdr_trigger_queue_arn  = var.dev_tdr_trigger_queue_arn
+    tdr_trigger_queue_arn  = var.tdr_trigger_queue_arn
     editorial_retry_trigger_arn = var.editorial_retry_trigger_arn
   })
   logging_configuration {
