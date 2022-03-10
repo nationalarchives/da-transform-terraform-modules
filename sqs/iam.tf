@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "editorial_sqs_policy" {
       ]
     }
     resources = [
-      aws_sqs_queue.editorial_message_queue_policy.arn
+      aws_sqs_queue.editorial_message_queue.arn
     ]
   }
 }
