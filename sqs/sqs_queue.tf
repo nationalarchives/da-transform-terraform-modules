@@ -20,7 +20,7 @@ resource "aws_sqs_queue" "tdr_message_deadletter_queue" {
 resource "aws_sqs_queue" "editorial_message_queue" {
   name = "${var.env}-te-editorial-retry"
   redrive_policy = jsonencode({
-    deadLetterTargetArn = "${aws_sqs_queue.editorial_retry_deadlette_queue.arn}"
+    deadLetterTargetArn = "${aws_sqs_queue.editorial_retry_deadletter_queue.arn}"
     maxReceiveCount     = 5
   })
   sqs_managed_sse_enabled = true
@@ -32,7 +32,7 @@ resource "aws_sqs_queue_policy" "editorial_message_queue_policy" {
 }
 
 resource "aws_sqs_queue" "editorial_retry_deadletter_queue" {
-  name                    = "${var.env}-te-editorial-retry-deadlette-queue"
+  name                    = "${var.env}-te-editorial-retry-deadletter-queue"
   sqs_managed_sse_enabled = true
 }
 
