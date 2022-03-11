@@ -139,12 +139,13 @@ data "aws_iam_policy_document" "editorial_sns_topic_policy" {
     resources = [ aws_sns_topic.editorial_sns.arn ]
   }
 
-  # statement {
-  #   actions = [ "sns:Subscribe" ]
-  #   effect = "Allow"
-  #   principals {
-  #     type = "AWS"
-  #     identifiers = [ var.editorial_sns_sub_arn ]
-  #   }
-  # }
+  statement {
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [ var.editorial_sns_sub_arn ]
+    }
+    resources = [ aws_sns_topic.editorial_sns.arn ]
+  }
 }
