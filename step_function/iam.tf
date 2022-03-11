@@ -125,3 +125,25 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     ]
   }
 }
+
+# SNS Policy
+
+data "aws_iam_policy_document" "editorial_sns_topic_policy" {
+  statement {
+    actions = [ "sns:Publish" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [ aws_sfn_state_machine.arn ]
+    }
+  }
+
+  statement {
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [ var.editorial_sns_sub_arn ]
+    }
+  }
+}

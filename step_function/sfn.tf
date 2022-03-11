@@ -7,6 +7,7 @@ resource "aws_sfn_state_machine" "tdr_state_machine" {
     tdr_sqs_queue_endpoint = var.tdr_sqs_queue_endpoint
     tdr_trigger_queue_arn  = var.tdr_trigger_queue_arn
     editorial_retry_trigger_arn = var.editorial_retry_trigger_arn
+    editorial_sns_topic_arn = aws_sns_topic.editorial_sns.arn
   })
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.tdr_state_machine_logs.arn}:*"

@@ -27,3 +27,8 @@ variable "editorial_retry_trigger_arn" {
   description = "ARN of the editorial retry trigger queue"
   type = string
 }
+
+variable "editorial_sns_sub_arn" {
+  description = "ARN of the editorial SNS Subscription role"
+  type = string
+}

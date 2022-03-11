@@ -64,10 +64,15 @@
         "Type": "Pass",
         "Next": "SNSPlaceHolder"
       },
-      "SNSPlaceHolder": {
-        "Type": "Pass",
-        "End": true
-      },
+      "SNS Publish": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "Message.$": "$",
+          "TopicArn": "${editorial_sns_topic_arn}"
+        },
+      "End": true
+    },
       "Bagit validation error?": {
         "Type": "Choice",
         "Choices": [
