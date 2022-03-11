@@ -138,12 +138,12 @@ data "aws_iam_policy_document" "editorial_sns_topic_policy" {
     }
   }
 
-  statement {
-    actions = [ "sns:Subscribe" ]
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [ var.editorial_sns_sub_arn ]
-    }
-  }
+  # statement {
+  #   actions = [ "sns:Subscribe" ]
+  #   effect = "Allow"
+  #   principals {
+  #     type = "AWS"
+  #     identifiers = [ var.editorial_sns_sub_arn ]
+  #   }
+  # }
 }
