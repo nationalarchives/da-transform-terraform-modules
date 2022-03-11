@@ -140,6 +140,7 @@ data "aws_iam_policy_document" "editorial_sns_topic_policy" {
   }
 
   statement {
+    sid = "SNS Subscription for Editorial"
     actions = [ "sns:Subscribe" ]
     effect = "Allow"
     principals {
