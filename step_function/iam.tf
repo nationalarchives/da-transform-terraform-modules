@@ -136,6 +136,7 @@ data "aws_iam_policy_document" "editorial_sns_topic_policy" {
       type = "AWS"
       identifiers = [ aws_sfn_state_machine.tdr_state_machine.role_arn ]
     }
+    resources = [ aws_sns_topic.editorial_sns.arn ]
   }
 
   # statement {
