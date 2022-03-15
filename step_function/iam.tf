@@ -101,7 +101,8 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     effect  = "Allow"
     resources = [
       aws_lambda_function.retrieve_bagit_function.arn,
-      aws_lambda_function.bagit_files_checksum_function.arn
+      aws_lambda_function.bagit_files_checksum_function.arn,
+      aws_lambda_function.run_judgement_parser.arn
     ]
   }
 
