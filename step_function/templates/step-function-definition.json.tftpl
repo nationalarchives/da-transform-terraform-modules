@@ -59,7 +59,6 @@
         "Type": "Task",
         "Resource": "${run_judgments_parser}",
         "Next": "EditorialIntegration",
-        "InputPath": "$.body",
         "Retry": [
           {
             "ErrorEquals": [
@@ -93,6 +92,7 @@
           "Message.$": "$",
           "TopicArn": "${editorial_sns_topic_arn}"
         },
+        "InputPath": "$.editorial-output"
       "End": true
     },
       "Bagit validation error?": {
@@ -164,7 +164,7 @@
                 "NumericLessThan": 3
               }
             ],
-            "Next": "EditorialRetryMessage"
+            "Next": "RunJudgmentsParser"
           }
         ],
         "Default": "Files checksum failed"
