@@ -55,10 +55,21 @@
           }
         ]
       },
-      "ParserFunctionPlaceHolder": {
-        "Type": "Pass",
+      "RunJudgmentsParser": {
+        "Type": "Task",
+        "Resource": "${run_judgments_parser}",
         "Next": "EditorialFunctionPlaceholder",
-        "InputPath": "$.body"
+        "InputPath": "$.body",
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "States.TaskFailed"
+            ],
+            "BackoffRate": 2,
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3
+          }
+        ]
       },
       "EditorialFunctionPlaceholder": {
         "Type": "Pass",
@@ -149,7 +160,7 @@
       },
       "EditorialRetryMessage": {
         "Type": "Pass",
-        "Next": "ParserFunctionPlaceHolder",
+        "Next": "RunJudgmentsParser",
         "Parameters": {
           "body.$": "States.StringToJson($.body)"
         }

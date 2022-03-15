@@ -26,10 +26,10 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
   }
 }
 
-resource "aws_lambda_function" "run_judgement_parser" {
+resource "aws_lambda_function" "run_judgments_parser" {
   image_uri = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser-step-function:latest"
   package_type = "Image"
-  function_name = "${var.env}-te-run-judgement-parser"
+  function_name = "${var.env}-te-run-judgments-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
   timeout = 30
 }
