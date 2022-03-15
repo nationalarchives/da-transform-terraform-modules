@@ -40,4 +40,10 @@ resource "aws_lambda_function" "editorial_integration" {
   function_name = "${var.env}-te-editorial-integration"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
   timeout = 30
+  environment {
+    variables = {
+      "TE_VERSION_JSON" = "{}"
+      "TE_PRESIGNED_URL_EXPIRY" = 300
+    }
+  }
 }
