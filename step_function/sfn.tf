@@ -9,6 +9,7 @@ resource "aws_sfn_state_machine" "tdr_state_machine" {
     editorial_retry_trigger_arn = var.editorial_retry_trigger_arn
     editorial_sns_topic_arn = aws_sns_topic.editorial_sns.arn
     run_judgments_parser = aws_lambda_function.run_judgments_parser.arn
+    editorial_integration_lambda = aws_lambda_function.editorial_integration.arn
   })
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.tdr_state_machine_logs.arn}:*"

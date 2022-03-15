@@ -33,3 +33,11 @@ resource "aws_lambda_function" "run_judgments_parser" {
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
   timeout = 30
 }
+
+resource "aws_lambda_function" "editorial_integration" {
+  image_uri = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-editorial-integration:latest"
+  package_type = "Image"
+  function_name = "${var.env}-te-editorial-integration"
+  role = aws_iam_role.retrieve_bagit_lambda_role.arn
+  timeout = 30
+}

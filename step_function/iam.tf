@@ -102,7 +102,8 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     resources = [
       aws_lambda_function.retrieve_bagit_function.arn,
       aws_lambda_function.bagit_files_checksum_function.arn,
-      aws_lambda_function.run_judgments_parser.arn
+      aws_lambda_function.run_judgments_parser.arn,
+      aws_lambda_function.editorial_integration.arn
     ]
   }
 
