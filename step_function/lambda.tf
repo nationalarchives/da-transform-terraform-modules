@@ -42,7 +42,7 @@ resource "aws_lambda_function" "editorial_integration" {
   timeout = 30
   environment {
     variables = {
-      "TE_VERSION_JSON" = {"int-te-version": "0.0.0", "text-parser-version": "v0.0", "lambda-functions-version": [ { "int-te-bagit-checksum-validation": "0.0.0" }, { "int-te-files-checksum-validation": "0.0.0" }, { "int-text-parser-version": "v0.0" } ]}
+      "TE_VERSION_JSON" = jsonencode({"int-te-version": "0.0.0", "text-parser-version": "v0.0", "lambda-functions-version": [ { "int-te-bagit-checksum-validation": "0.0.0" }, { "int-te-files-checksum-validation": "0.0.0" }, { "int-text-parser-version": "v0.0" } ]})
       "TE_PRESIGNED_URL_EXPIRY" = 300
     }
   }
