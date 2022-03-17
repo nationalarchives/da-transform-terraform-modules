@@ -174,7 +174,8 @@
         "Next": "EditorialIntegration",
         "Parameters": {
           "body.$": "States.StringToJson($.body)"
-        }
+        },
+        "OutputPath": "$.body"
       },
       "SendMessage to TDR for files": {
         "Type": "Task",

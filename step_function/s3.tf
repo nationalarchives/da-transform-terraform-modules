@@ -50,7 +50,7 @@ resource "aws_s3_bucket" "editorial_judgment_out" {
 
 resource "aws_s3_bucket_policy" "editorial_judgment_out" {
   bucket = aws_s3_bucket.editorial_judgment_out.bucket
-  policy = data.aws_iam_policy_document.tdr_out_bucket_policy.json
+  policy = data.aws_iam_policy_document.editorial_judgment_out_bucket_policy.json
 }
 
 resource "aws_s3_bucket_acl" "editorial_judgment_out" {
