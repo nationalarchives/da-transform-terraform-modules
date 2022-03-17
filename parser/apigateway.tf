@@ -29,7 +29,7 @@ resource "aws_apigatewayv2_stage" "judgment_parser_api" {
 resource "aws_apigatewayv2_integration" "judgment_parser_api" {
   api_id = aws_apigatewayv2_api.judgment_parser_api.id
   integration_uri = aws_lambda_function.judgment_parser_lambda.invoke_arn
-  integration_method = "POST"
+  integration_method = "ANY"
   integration_type = "AWS_PROXY"
 }
 
