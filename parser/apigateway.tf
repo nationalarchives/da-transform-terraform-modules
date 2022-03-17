@@ -30,7 +30,7 @@ resource "aws_apigatewayv2_integration" "judgment_parser_api" {
   api_id = aws_apigatewayv2_api.judgment_parser_api.id
   integration_uri = aws_lambda_function.judgment_parser_lambda.invoke_arn
   integration_method = "ANY"
-  integration_type = "AWS_PROXY"
+  integration_type = "AWS"
 }
 
 resource "aws_apigatewayv2_route" "judgment_parser_api" {
