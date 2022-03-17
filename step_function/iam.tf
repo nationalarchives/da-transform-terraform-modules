@@ -35,7 +35,19 @@ data "aws_iam_policy_document" "tdr_out_bucket_policy" {
     resources = ["${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn]
   }
 
+}
 
+data "aws_iam_policy_document" "editorial_judgment_out_bucket_policy" {
+  statement {
+    actions = ["s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_lambda_function.retrieve_bagit_function.role]
+    }
+
+    resources = ["${aws_s3_bucket.editorial_judgment_out.arn}/*", aws_s3_bucket.editorial_judgment_out.arn]
+  }
 }
 
 # StateFunction roles and policies
