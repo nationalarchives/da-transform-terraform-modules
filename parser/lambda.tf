@@ -11,6 +11,6 @@ resource "aws_lambda_permission" "api_invocation" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.judgment_parser_lambda.function_name
   principal = "apigateway.amazonaws.com"
-  source_arn = "${aws_apigatewayv2_api.judgment_parser_api.execution_arn}/*/*/*"
+  source_arn = "${aws_apigatewayv2_api.judgment_parser_api.execution_arn}/*/*/${aws_lambda_function.judgment_parser_lambda.function_name}"
 }
 
