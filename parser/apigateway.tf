@@ -31,6 +31,7 @@ resource "aws_apigatewayv2_integration" "judgment_parser_api" {
   integration_uri = aws_lambda_function.judgment_parser_lambda.invoke_arn
   integration_method = "POST"
   integration_type = "AWS_PROXY"
+  payload_format_version = "2.0"
 }
 
 resource "aws_apigatewayv2_route" "judgment_parser_api" {
