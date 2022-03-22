@@ -14,3 +14,6 @@ resource "aws_lambda_permission" "api_invocation" {
   source_arn = "${aws_apigatewayv2_api.judgment_parser_api.execution_arn}/*/*/${aws_lambda_function.judgment_parser_lambda.function_name}"
 }
 
+output "lambda_name" {
+  value = aws_lambda_function.judgment_parser_lambda.function_name
+}
