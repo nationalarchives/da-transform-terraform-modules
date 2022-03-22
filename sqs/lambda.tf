@@ -10,6 +10,9 @@ resource "aws_lambda_function" "tdr_message_function" {
       SFN_ARN = "${var.sfn_arn}"
     }
   }
+  tags = {
+    ApplicationType = "Python"
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "tdr_message_sqs" {

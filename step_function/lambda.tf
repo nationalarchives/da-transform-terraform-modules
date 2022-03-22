@@ -10,6 +10,10 @@ resource "aws_lambda_function" "retrieve_bagit_function" {
       "S3_TEMPORARY_BUCKET" = aws_s3_bucket.tdr_bagit_out.bucket
     }
   }
+
+  tags = {
+    ApplicationType = "Python"
+  }
 }
 
 resource "aws_lambda_function" "bagit_files_checksum_function" {
@@ -24,6 +28,10 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
       "S3_TEMPORARY_BUCKET" = aws_s3_bucket.tdr_bagit_out.bucket
     }
   }
+
+  tags = {
+    ApplicationType = "Python"
+  }
 }
 
 resource "aws_lambda_function" "run_judgments_parser" {
@@ -37,6 +45,10 @@ resource "aws_lambda_function" "run_judgments_parser" {
       "S3_PARSER_BUCKET" = aws_s3_bucket.editorial_judgment_out.bucket
       "API_ENDPOINT" = var.api_endpoint
     }
+  }
+
+  tags = {
+    ApplicationType = "Python"
   }
 }
 
@@ -55,5 +67,9 @@ resource "aws_lambda_function" "editorial_integration" {
       "S3_FILE_PARSER_META"="te-meta.json"
       "S3_FILE_BAGIT_INFO"="bagit-info.txt"
     }
+  }
+
+  tags = {
+    ApplicationType = "Python"
   }
 }

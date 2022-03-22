@@ -4,6 +4,10 @@ resource "aws_lambda_function" "judgment_parser_lambda" {
   function_name = "${var.env}-te-judgment-parser"
   role = aws_iam_role.judgment_parser_lambda_role.arn
   timeout = 30
+
+  tags = {
+    ApplicationType = ".NET"
+  }
 }
 
 resource "aws_lambda_permission" "api_invocation" {
