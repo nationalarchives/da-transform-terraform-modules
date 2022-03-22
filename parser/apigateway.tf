@@ -34,11 +34,11 @@ resource "aws_apigatewayv2_integration" "judgment_parser_api" {
   payload_format_version = "2.0"
 }
 
-# resource "aws_apigatewayv2_route" "judgment_parser_api" {
-#   api_id = aws_apigatewayv2_api.judgment_parser_api.id
-#   route_key = "$default"
-#   target = "integrations/${aws_apigatewayv2_integration.judgment_parser_api.id}"
-# }
+resource "aws_apigatewayv2_route" "judgment_parser_api" {
+  api_id = aws_apigatewayv2_api.judgment_parser_api.id
+  route_key = "$default"
+  target = "integrations/${aws_apigatewayv2_integration.judgment_parser_api.id}"
+}
 
 resource "aws_cloudwatch_log_group" "judgment_parser_api_logs" {
   name = "${var.env}-te-judgment-parser-api-logs"
