@@ -36,7 +36,7 @@ resource "aws_apigatewayv2_integration" "judgment_parser_api" {
 
 resource "aws_apigatewayv2_route" "judgment_parser_api" {
   api_id = aws_apigatewayv2_api.judgment_parser_api.id
-  route_key = "ANY /dev-te-judgment-parser"
+  route_key = "ANY /${aws_lambda_function.judgment_parser_lambda.function_name}"
   target = "integrations/${aws_apigatewayv2_integration.judgment_parser_api.id}"
 }
 
