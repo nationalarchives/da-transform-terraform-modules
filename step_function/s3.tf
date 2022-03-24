@@ -1,7 +1,7 @@
 # TDR bagit-out-temp Bucket
 
 resource "aws_s3_bucket" "tdr_bagit_out" {
-  bucket = "${var.env}-te-temp"
+  bucket = "${var.env}-${var.prefix}-temp"
 
 }
 
@@ -44,7 +44,7 @@ resource "aws_s3_bucket_public_access_block" "tdr_bagit_out" {
 # editorial judgment-out bucket
 
 resource "aws_s3_bucket" "editorial_judgment_out" {
-  bucket = "${var.env}-te-editorial-judgment-out"
+  bucket = "${var.env}-${var.prefix}-editorial-judgment-out"
 
 }
 

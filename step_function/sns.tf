@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "editorial_sns" {
-  name = "${var.env}-te-editorial-out"
+  name = "${var.env}-${var.prefix}-editorial-out"
   kms_master_key_id = "alias/aws/sns"
 }
 

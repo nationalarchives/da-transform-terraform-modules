@@ -1,9 +1,9 @@
 # Lambda roles and policies
 resource "aws_iam_role" "tdr_message_lambda_role" {
-  name               = "${var.env}-te-step-function-trigger-lambda-role"
+  name               = "${var.env}-${var.prefix}-step-function-trigger-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
   inline_policy {
-    name   = "state_function_execution"
+    name   = "${var.env}-${var.prefix}-step-function-execution"
     policy = data.aws_iam_policy_document.step_function_execution.json
   }
 }

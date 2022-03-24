@@ -3,6 +3,11 @@ variable "env" {
   type        = string
 }
 
+variable "prefix" {
+  description = "Transformation Engine prefix"
+  type = string
+}
+
 variable "tdr_sqs_queue_endpoint" {
   description = "Endpoint of the TDR SQS Queue for the retry message"
   type        = string

@@ -1,7 +1,7 @@
 # Lambda roles and policies
 
 resource "aws_iam_role" "retrieve_bagit_lambda_role" {
-  name               = "${var.env}-te-bagit-checksum-validation-lambda-role"
+  name               = "${var.env}-${var.prefix}-bagit-checksum-validation-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "editorial_judgment_out_bucket_policy" {
 # StateFunction roles and policies
 
 resource "aws_iam_role" "tdr_state_machine_role" {
-  name               = "${var.env}-te-state-machine-role"
+  name               = "${var.env}-${var.prefix}-state-machine-role"
   assume_role_policy = data.aws_iam_policy_document.state_function_role_policy.json
   inline_policy {
     name   = "${var.env}-state-function-logs-policy"

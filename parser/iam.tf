@@ -1,5 +1,5 @@
 resource "aws_iam_role" "judgment_parser_lambda_role" {
-  name = "${var.env}-te-judgment-parser-lambda-role"
+  name = "${var.env}-${var.prefix}-judgment-parser-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.judgment_parser_lambda_assume_role_policy.json
 }
 

@@ -1,11 +1,11 @@
 resource "aws_apigatewayv2_api" "judgment_parser_api" {
-  name = "${var.env}-te-judgment-parser-api"
+  name = "${var.env}-${var.prefix}-judgment-parser-api"
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_stage" "judgment_parser_api" {
   api_id = aws_apigatewayv2_api.judgment_parser_api.id
-  name = "${var.env}-te-judgment-parser-lambda"
+  name = "${var.env}-${var.prefix}-judgment-parser-lambda"
   auto_deploy = true
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.judgment_parser_api_logs.arn
@@ -41,7 +41,7 @@ resource "aws_apigatewayv2_route" "judgment_parser_api" {
 }
 
 resource "aws_cloudwatch_log_group" "judgment_parser_api_logs" {
-  name = "${var.env}-te-judgment-parser-api-logs"
+  name = "${var.env}-${var.prefix}-judgment-parser-api-logs"
 }
 
 output "parser_api_endpoint" {
