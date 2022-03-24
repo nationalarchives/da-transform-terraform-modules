@@ -56,11 +56,11 @@ resource "aws_iam_role" "tdr_state_machine_role" {
   name               = "${var.env}-${var.prefix}-state-machine-role"
   assume_role_policy = data.aws_iam_policy_document.state_function_role_policy.json
   inline_policy {
-    name   = "${var.env}-state-function-logs-policy"
+    name   = "${var.env}-${var.prefix}-state-machine-logs-policy"
     policy = data.aws_iam_policy_document.step_function_policies.json
   }
   inline_policy {
-    name   = "${var.env}-state-function-lambda-policy"
+    name   = "${var.env}-${var.prefix}-state-machine-policy"
     policy = data.aws_iam_policy_document.state_fucntion_lambda_policy.json
   }
 }
