@@ -70,6 +70,20 @@
           }
         ]
       },
+      "Parser Error?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.error",
+          "BooleanEquals": false,
+          "Next": "EditorialIntegration"
+        }
+      ],
+      "Default": "Parser Failed"
+      },
+      "Parser Failed": {
+      "Type": "Fail"
+      },
       "EditorialIntegration": {
         "Type": "Task",
         "Resource": "${editorial_integration_lambda}",
