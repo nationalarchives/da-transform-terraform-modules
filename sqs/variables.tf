@@ -20,3 +20,8 @@ variable "editorial_role_arn" {
 variable "sfn_arn" {
   description = "role ARN for the stepfunction"
 }
+
+variable "account_id" {
+  description = "Account ID where Image for the Lambda function will be"
+  type = string
+}

@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "judgment_parser_lambda" {
-  image_uri = "882876621099.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser:v0.2"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser:v0.2"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-judgment-parser"
   role = aws_iam_role.judgment_parser_lambda_role.arn
