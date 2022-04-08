@@ -26,7 +26,7 @@ variable "account_id" {
   type = string
 }
 
-variable "image_version" {
+variable "image_versions" {
   description = "Latest image version for Lambda Functions"
   type = object({
     te_step_function_trigger = string
