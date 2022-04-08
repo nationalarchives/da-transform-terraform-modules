@@ -28,7 +28,7 @@ variable "account_id" {
 
 variable "image_version" {
   description = "Latest image version for Lambda Functions"
-  type = list(object({
+  type = map(object({
     te_step_function_trigger = string
   }))
 }
