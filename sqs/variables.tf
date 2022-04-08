@@ -25,3 +25,10 @@ variable "account_id" {
   description = "Account ID where Image for the Lambda function will be"
   type = string
 }
+
+variable "image_version" {
+  description = "Latest image version for Lambda Functions"
+  type = list(object({
+    
+  }))
+}
