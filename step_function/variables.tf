@@ -47,3 +47,13 @@ variable "account_id" {
   description = "Account ID where Image for the Lambda function will be"
   type = string
 }
+
+variable "image_versions" {
+  description = "Latest version of Images for Lambda Functions"
+  type = object({
+    te_bagit_checksum_validation = string
+    te_files_checksum_validation = string
+    te_text_parser_step_function = string
+    te_editorial_integration = string
+  })
+}

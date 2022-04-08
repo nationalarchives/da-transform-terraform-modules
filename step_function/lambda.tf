@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "retrieve_bagit_function" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-bagit-checksum-validation:0.0.6"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-bagit-checksum-validation:${var.image_versions.te_bagit_checksum_validation}"
   package_type  = "Image"
   function_name = "${var.env}-${var.prefix}-bagit-checksum-validation"
   role          = aws_iam_role.retrieve_bagit_lambda_role.arn
@@ -17,7 +17,7 @@ resource "aws_lambda_function" "retrieve_bagit_function" {
 }
 
 resource "aws_lambda_function" "bagit_files_checksum_function" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-files-checksum-validation:0.0.6"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-files-checksum-validation:${var.image_versions.te_files_checksum_validation}"
   package_type  = "Image"
   function_name = "${var.env}-${var.prefix}-files-checksum-validation"
   role          = aws_iam_role.retrieve_bagit_lambda_role.arn
@@ -35,7 +35,7 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
 }
 
 resource "aws_lambda_function" "run_judgments_parser" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser-step-function:0.0.10"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser-step-function:${var.image_versions.te_text_parser_step_function}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-run-judgments-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
@@ -53,7 +53,7 @@ resource "aws_lambda_function" "run_judgments_parser" {
 }
 
 resource "aws_lambda_function" "editorial_integration" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-editorial-integration:0.0.9"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-editorial-integration:${var.image_versions.te_editorial_integration}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-editorial-integration"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
