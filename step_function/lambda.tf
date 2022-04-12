@@ -43,7 +43,7 @@ resource "aws_lambda_function" "prepare_parser_input" {
   environment {
     variables = {
       "S3_PARSER_BUCKET" = aws_s3_bucket.editorial_judgment_out.bucket
-      "TE_PRESIGNED_URL_EXPIRY" = 60
+      "TE_PRESIGNED_URL_EXPIRY" = 300
     }
   }
 
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "judgment_parser_lambda" {
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-run-judgment-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
-  timeout = 30
+  timeout = 300
 
   tags = {
     ApplicationType = ".NET"
