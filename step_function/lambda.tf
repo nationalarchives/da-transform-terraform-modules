@@ -34,10 +34,10 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
   }
 }
 
-resource "aws_lambda_function" "run_judgments_parser" {
+resource "aws_lambda_function" "prepare_parser_input" {
   image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser-step-function:${var.image_versions.te_text_parser_step_function}"
   package_type = "Image"
-  function_name = "${var.env}-${var.prefix}-run-judgments-parser"
+  function_name = "${var.env}-${var.prefix}-prepare-parser-input"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
   timeout = 30
   environment {
@@ -49,6 +49,26 @@ resource "aws_lambda_function" "run_judgments_parser" {
 
   tags = {
     ApplicationType = "Python"
+  }
+}
+
+# Run Parser Function
+
+resource "aws_lambda_function" "judgment_parser_lambda" {
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser:${var.image_versions.te_text_parser}"
+  package_type = "Image"
+  function_name = "${var.env}-${var.prefix}-run-judgment-parser"
+  role = aws_iam_role.retrieve_bagit_lambda_role.arn
+  timeout = 30
+  environment {
+    variables = {
+      "S3_PARSER_BUCKET" = aws_s3_bucket.editorial_judgment_out.bucket
+      "TE_PRESIGNED_URL_EXPIRY" = 60
+    }
+  }
+
+  tags = {
+    ApplicationType = ".NET"
   }
 }
 

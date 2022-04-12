@@ -55,9 +55,10 @@
           }
         ]
       },
-      "RunJudgmentsParser": {
+
+      "Prepare Parser Input": {
         "Type": "Task",
-        "Resource": "${run_judgments_parser}",
+        "Resource": "${prepare_parser_input}",
         "Next": "Parser Error?",
         "Retry": [
           {
@@ -70,20 +71,84 @@
           }
         ]
       },
-      "Parser Error?": {
+      "Parser Input Check": {
       "Type": "Choice",
       "Choices": [
         {
           "Variable": "$.error",
           "BooleanEquals": false,
-          "Next": "EditorialIntegration"
+          "Next": "Parallel"
         }
       ],
-      "Default": "Parser Failed"
-      },
-      "Parser Failed": {
+      "Default": "Prepare Parser Input Failed"
+    },
+
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "EditorialIntegration",
+      "Branches": [
+        {
+          "StartAt": "Create Parser Input",
+          "States": {
+            "Create Parser Input": {
+              "Type": "Pass",
+              "Next": "RunJudgmentParser",
+              "Parameters": {
+                "parser-inputs.$": "$.parser-inputs"
+              }
+            },
+            "RunJudgmentParser": {
+              "Type": "Task",
+              "Resource": "${run_judgments_parser}",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "BackoffRate": 1,
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3
+                }
+              ],
+              "Next": "Check Parser Result"
+            },
+            "Check Parser Result": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Not": {
+                    "Variable": "$.parser-outputs.error-messages[0]",
+                    "IsPresent": true
+                  },
+                  "Next": "Parser OK"
+                }
+              ],
+              "Default": "Parser Error"
+            },
+            "Parser OK": {
+              "Type": "Pass",
+              "End": true
+            },
+            "Parser Error": {
+              "Type": "Fail"
+            }
+          }
+        },
+        {
+          "StartAt": "Pass Context",
+          "States": {
+            "Pass Context": {
+              "Type": "Pass",
+              "End": true
+            }
+          }
+        }
+      ]
+    },
+    "Prepare Parser Input Failed": {
       "Type": "Fail"
-      },
+    },
+      
       "EditorialIntegration": {
         "Type": "Task",
         "Resource": "${editorial_integration_lambda}",
@@ -178,7 +243,7 @@
                 "NumericLessThan": 3
               }
             ],
-            "Next": "RunJudgmentsParser"
+            "Next": "Prepare Parser Input"
           }
         ],
         "Default": "Files checksum failed"

@@ -55,5 +55,6 @@ variable "image_versions" {
     te_files_checksum_validation = string
     te_text_parser_step_function = string
     te_editorial_integration = string
+    te_text_parser = string
   })
 }
