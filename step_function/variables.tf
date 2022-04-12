@@ -38,10 +38,7 @@ variable "editorial_sns_sub_arn" {
   type = string
 }
 
-variable "api_endpoint" {
-  description = "Endpoint for Parser API Gateway"
-  type = string
-}
+
 
 variable "account_id" {
   description = "Account ID where Image for the Lambda function will be"
