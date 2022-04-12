@@ -1,7 +1,7 @@
 # Lambda roles and policies
 
 resource "aws_iam_role" "retrieve_bagit_lambda_role" {
-  name               = "${var.env}-${var.prefix}-bagit-checksum-validation-lambda-role"
+  name               = "${var.env}-${var.prefix}-step-function-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
