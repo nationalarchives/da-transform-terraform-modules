@@ -13,7 +13,7 @@ resource "aws_sns_topic_policy" "editorial_sns_policy" {
 
 resource "aws_sns_topic" "tre_slack_alerts" {
   name = "${var.env}-${var.prefix}-slack-alerts"
-  kkms_master_key_id = "alias/aws/sns" 
+  kms_master_key_id = "alias/aws/sns" 
 }
 
 resource "aws_sns_topic_policy" "tre_slack_alerts_sns_policy" {
