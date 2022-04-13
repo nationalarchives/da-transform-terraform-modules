@@ -55,3 +55,20 @@ variable "image_versions" {
     te_text_parser = string
   })
 }
+
+# Slack
+
+variable "slack_webhook_url" {
+  description = "Webhook URL for tre slack alerts"
+  type = string
+}
+
+variable "slack_channel" {
+  description = "Channel name for the tre slack alerts"
+  type = string
+}
+
+variable "slack_username" {
+  description = "Username for tre slack alerts"
+  type = string
+}

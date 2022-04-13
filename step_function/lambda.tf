@@ -87,3 +87,25 @@ resource "aws_lambda_function" "editorial_integration" {
     ApplicationType = "Python"
   }
 }
+
+# SNS Slack Alerts
+
+resource "aws_lambda_function" "tre_slack_alerts_function" {
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-slack-alerts:0.0.1"
+  package_type = "Image"
+  function_name = "${var.env}-${var.prefix}-slack-alerts"
+  role = ""
+  timeout = 30
+  environment {
+    variables = {
+      "SLACK_WEBHOOK_URL" = var.slack_webhook_url
+      "ENV" = var.env
+      "SLACK_CHANNEL" = var.slack_channel
+      "SLACK_USERNAME" = var.slack_username
+    }
+  }
+
+  tags = {
+    "ApplicationType" = "Python"
+  }
+}
