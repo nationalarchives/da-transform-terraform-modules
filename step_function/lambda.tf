@@ -109,3 +109,11 @@ resource "aws_lambda_function" "tre_slack_alerts_function" {
     "ApplicationType" = "Python"
   }
 }
+
+resource "aws_lambda_permission" "tre_slakc_alerts_sns_trigger_permission" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tre_slack_alerts_function.function_name
+  principal = "sns.amazonaws.com"
+  source_arn = aws_sns_topic.tre_slack_alerts.arn
+}
