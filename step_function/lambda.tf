@@ -94,7 +94,7 @@ resource "aws_lambda_function" "tre_slack_alerts_function" {
   image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-slack-alerts:0.0.1"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-slack-alerts"
-  role = ""
+  role = aws_iam_role.tre_slack_alerts_lambda_role.arn
   timeout = 30
   environment {
     variables = {
