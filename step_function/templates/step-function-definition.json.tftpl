@@ -145,7 +145,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "Message.$": "$",
-        "TopicArn": "${editorial_sns_topic_arn}"
+        "TopicArn": "${tre-slack-alerts-sns}"
       },
       "Next": "Prepare Parser Input Failed"
     },
