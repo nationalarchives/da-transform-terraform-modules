@@ -91,7 +91,7 @@ resource "aws_lambda_function" "editorial_integration" {
 # SNS Slack Alerts
 
 resource "aws_lambda_function" "tre_slack_alerts_function" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-slack-alerts:0.0.1"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-slack-alerts:${var.image_versions.tre_slack_alerts}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-slack-alerts"
   role = aws_iam_role.tre_slack_alerts_lambda_role.arn
