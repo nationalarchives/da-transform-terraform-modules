@@ -1,77 +1,127 @@
 {
-    "Comment": "State machine for the TE to process the BagIt package",
-    "StartAt": "Choice",
-    "States": {
-      "Choice": {
-        "Type": "Choice",
-        "Choices": [
-            {
-            "Variable": "$.eventSourceARN",
-            "StringMatches": "${tdr_trigger_queue_arn}",
-            "Next": "TDRMessage"
-            },
-            {
-            "Variable": "$.eventSourceARN",
-            "StringMatches": "${editorial_retry_trigger_arn}",
-            "Next": "EditorialRetryMessage"
-            }
-        ]
-      },
-      "TDRMessage": {
-        "Type": "Pass",
-        "Next": "BagIt checksum validation",
-        "Parameters": {
-            "body.$": "States.StringToJson($.body)"
+  "Comment": "State machine for the TE to process the BagIt package",
+  "StartAt": "Choice",
+  "States": {
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.eventSourceARN",
+          "StringMatches": "${tdr_trigger_queue_arn}",
+          "Next": "TDRMessage"
+        },
+        {
+          "Variable": "$.eventSourceARN",
+          "StringMatches": "${editorial_retry_trigger_arn}",
+          "Next": "EditorialRetryMessage"
         }
-      },
-      "BagIt checksum validation": {
-        "Type": "Task",
-        "Resource": "${bagit_checksum_lambda}",
-        "Next": "Bagit validation error?",
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "BackoffRate": 2,
-            "IntervalSeconds": 1,
-            "MaxAttempts": 3
-          }
-        ],
-        "InputPath": "$.body"
-      },
-      "Files checksum validation": {
-        "Type": "Task",
-        "Resource": "${files_checksum_lambda}",
-        "Next": "Files validation errors?",
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "BackoffRate": 2,
-            "IntervalSeconds": 1,
-            "MaxAttempts": 3
-          }
-        ]
-      },
-
-      "Prepare Parser Input": {
-        "Type": "Task",
-        "Resource": "${prepare_parser_input}",
-        "Next": "Parser Input Check",
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "BackoffRate": 2,
-            "IntervalSeconds": 1,
-            "MaxAttempts": 3
-          }
-        ]
-      },
-      "Parser Input Check": {
+      ]
+    },
+    "TDRMessage": {
+      "Type": "Pass",
+      "Next": "BagIt checksum validation",
+      "Parameters": {
+        "body.$": "States.StringToJson($.body)"
+      }
+    },
+    "BagIt checksum validation": {
+      "Type": "Task",
+      "Resource": "${bagit_checksum_lambda}",
+      "Next": "Bagit validation error?",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "BackoffRate": 1,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "InputPath": "$.body",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Bagit Checksum Function Error"
+        }
+      ]
+    },
+    "Bagit Checksum Function Error": {
+      "Type": "Pass",
+      "Next": "Bagit Checksum Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "Error.$": "$.Error",
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "Files checksum validation": {
+      "Type": "Task",
+      "Resource": "${files_checksum_lambda}",
+      "Next": "Files validation errors?",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "BackoffRate": 1,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Files Checksum Function Error"
+        }
+      ]
+    },
+    "Files Checksum Function Error": {
+      "Type": "Pass",
+      "Next": "File Checksum Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "Error.$": "$.Error",
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "Prepare Parser Input": {
+      "Type": "Task",
+      "Resource": "${prepare_parser_input}",
+      "Next": "Parser Input Check",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "BackoffRate": 1,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Parser Input Function Error"
+        }
+      ]
+    },
+    "Parser Input Function Error": {
+      "Type": "Pass",
+      "Next": "Parser Input Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "Error.$": "$.Error",
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "Parser Input Check": {
       "Type": "Choice",
       "Choices": [
         {
@@ -80,9 +130,25 @@
           "Next": "Parallel"
         }
       ],
-      "Default": "Prepare Parser Input Failed"
+      "Default": "Parser Input error"
     },
-
+    "Parser Input error": {
+      "Type": "Pass",
+      "Next": "Parser Input Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "ErrorMessage.$": "$.error-message"
+      }
+    },
+    "Parser Input Error Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${editorial_sns_topic_arn}"
+      },
+      "Next": "Prepare Parser Input Failed"
+    },
     "Parallel": {
       "Type": "Parallel",
       "Next": "EditorialIntegration",
@@ -110,7 +176,24 @@
                   "MaxAttempts": 3
                 }
               ],
-              "Next": "Check Parser Result"
+              "Next": "Check Parser Result",
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "Next": "Judgment Parser Function Error"
+                }
+              ]
+            },
+            "Judgment Parser Function Error": {
+              "Type": "Pass",
+              "Next": "Parser Error Slack Alerts",
+              "Parameters": {
+                "Execution.$": "$$.Execution.Name",
+                "Error.$": "$.Error",
+                "ErrorMessage.$": "$.Cause"
+              }
             },
             "Check Parser Result": {
               "Type": "Choice",
@@ -125,11 +208,28 @@
               ],
               "Default": "Parser Error"
             },
+            "Parser Error": {
+              "Type": "Pass",
+              "Next": "Parser Error Slack Alerts",
+              "Parameters": {
+                "Execution.$": "$$.Execution.Name",
+                "ErrorMessage.$": "$.error-message"
+              }
+            },
+            "Parser Error Slack Alerts": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "Message.$": "$",
+                "TopicArn": "${tre-slack-alerts-sns}"
+              },
+              "Next": "Parser Failed"
+            },
             "Parser OK": {
               "Type": "Pass",
               "End": true
             },
-            "Parser Error": {
+            "Parser Failed": {
               "Type": "Fail"
             }
           }
@@ -148,129 +248,191 @@
     "Prepare Parser Input Failed": {
       "Type": "Fail"
     },
-      
-      "EditorialIntegration": {
-        "Type": "Task",
-        "Resource": "${editorial_integration_lambda}",
-        "Next": "Editorial SNS Publish",
-        "Retry": [
-          {
-            "ErrorEquals": [
-              "States.TaskFailed"
-            ],
-            "BackoffRate": 2,
-            "IntervalSeconds": 1,
-            "MaxAttempts": 3
-          }
-        ]
-      },
-      "Editorial SNS Publish": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sns:publish",
-        "Parameters": {
-          "Message.$": "$",
-          "TopicArn": "${editorial_sns_topic_arn}"
-        },
-        "End": true,
-        "InputPath": "$.editorial-output"
+    "Editorial Integration Failed": {
+      "Type": "Fail"
     },
-      "Bagit validation error?": {
-        "Type": "Choice",
-        "Choices": [
-          {
-            "And": [
-              {
-                "Variable": "$.error",
-                "BooleanEquals": true
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 3
-              }
-            ],
-            "Next": "SendMessage to TDR for BagIt"
-          },
-          {
-            "And": [
-              {
-                "Variable": "$.error",
-                "BooleanEquals": false
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 3
-              }
-            ],
-            "Next": "Files checksum validation"
-          }
-        ],
-        "Default": "BagIt checksum failed"
-      },
-      "SendMessage to TDR for BagIt": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sqs:sendMessage",
-        "Parameters": {
-          "MessageBody.$": "$",
-          "QueueUrl": "${tdr_sqs_queue_endpoint}"
-        },
-        "End": true,
-        "InputPath": "$.output-message"
-      },
-      "Files validation errors?": {
-        "Type": "Choice",
-        "Choices": [
-          {
-            "And": [
-              {
-                "Variable": "$.error",
-                "BooleanEquals": true
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 3
-              }
-            ],
-            "Next": "SendMessage to TDR for files"
-          },
-          {
-            "And": [
-              {
-                "Variable": "$.error",
-                "BooleanEquals": false
-              },
-              {
-                "Variable": "$.output-message.number-of-retries",
-                "NumericLessThan": 3
-              }
-            ],
-            "Next": "Prepare Parser Input"
-          }
-        ],
-        "Default": "Files checksum failed"
-      },
-      "EditorialRetryMessage": {
-        "Type": "Pass",
-        "Next": "EditorialIntegration",
-        "Parameters": {
-          "body.$": "States.StringToJson($.body)"
-        },
-        "OutputPath": "$.body"
-      },
-      "SendMessage to TDR for files": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sqs:sendMessage",
-        "Parameters": {
-          "MessageBody.$": "$",
-          "QueueUrl": "${tdr_sqs_queue_endpoint}"
-        },
-        "End": true,
-        "InputPath": "$.output-message"
-      },
-      "BagIt checksum failed": {
-        "Type": "Fail"
-      },
-      "Files checksum failed": {
-        "Type": "Fail"
+    "EditorialIntegration": {
+      "Type": "Task",
+      "Resource": "${editorial_integration_lambda}",
+      "Next": "Editorial SNS Publish",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "BackoffRate": 1,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Editorial Integration Function Error"
+        }
+      ]
+    },
+    "Editorial Integration Function Error": {
+      "Type": "Pass",
+      "Next": "Editorial Integration Error Slack Alerts (1)",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "Error.$": "$.Error",
+        "ErrorMessage.$": "$.Cause"
       }
+    },
+    "Editorial Integration Error Slack Alerts (1)": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "Next": "Editorial Integration Failed"
+    },
+    "Editorial SNS Publish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${editorial_sns_topic_arn}"
+      },
+      "End": true,
+      "InputPath": "$.editorial-output"
+    },
+    "Bagit validation error?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": true
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "SendMessage to TDR for BagIt"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": false
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "Files checksum validation"
+        }
+      ],
+      "Default": "Bagit Checksum Error"
+    },
+    "Bagit Checksum Error": {
+      "Type": "Pass",
+      "Next": "Bagit Checksum Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "ErrorMessage.$": "$.error-message"
+      }
+    },
+    "Bagit Checksum Error Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "Next": "BagIt checksum failed"
+    },
+    "SendMessage to TDR for BagIt": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "${tdr_sqs_queue_endpoint}"
+      },
+      "End": true,
+      "InputPath": "$.output-message"
+    },
+    "Files validation errors?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": true
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "SendMessage to TDR for files"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": false
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "Prepare Parser Input"
+        }
+      ],
+      "Default": "Files Checksum Error"
+    },
+    "Files Checksum Error": {
+      "Type": "Pass",
+      "Next": "File Checksum Error Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "ErrorMessage.$": "$.error-message"
+      }
+    },
+    "File Checksum Error Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "Next": "Files checksum failed"
+    },
+    "EditorialRetryMessage": {
+      "Type": "Pass",
+      "Next": "EditorialIntegration",
+      "Parameters": {
+        "body.$": "States.StringToJson($.body)"
+      },
+      "OutputPath": "$.body"
+    },
+    "SendMessage to TDR for files": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "${tdr_sqs_queue_endpoint}"
+      },
+      "End": true,
+      "InputPath": "$.output-message"
+    },
+    "BagIt checksum failed": {
+      "Type": "Fail"
+    },
+    "Files checksum failed": {
+      "Type": "Fail"
     }
   }
+}
