@@ -276,11 +276,13 @@
           "States": {
             "Pass Context": {
               "Type": "Pass",
-              "End": true
+              "End": true,
+              "Comment": "Pass parameters context and parser-inputs to next step"
             }
           }
         }
-      ]
+      ],
+      "Comment": "Input is filtered for run parser; the Pass Context flow merges it back"
     },
     "Prepare Parser Input Failed": {
       "Type": "Fail"
