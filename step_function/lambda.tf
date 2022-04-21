@@ -55,7 +55,7 @@ resource "aws_lambda_function" "prepare_parser_input" {
 # Run Parser Function
 
 resource "aws_lambda_function" "judgment_parser_lambda" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-text-parser:${var.image_versions.te_text_parser}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-run-judgment-parser:${var.image_versions.te_text_parser}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-run-judgment-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
