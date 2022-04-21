@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "tdr_message_function" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-step-function-trigger:${var.image_versions.te_step_function_trigger}"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-step-function-trigger:${var.image_versions.tre_step_function_trigger}"
   package_type  = "Image"
   function_name = "${var.env}-${var.prefix}-step-function-trigger"
   role          = aws_iam_role.tdr_message_lambda_role.arn
