@@ -35,7 +35,7 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
 }
 
 resource "aws_lambda_function" "prepare_parser_input" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/prepare-parser-input:${var.image_versions.te_text_parser_step_function}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-prepare-parser-input:${var.image_versions.te_text_parser_step_function}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-prepare-parser-input"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "judgment_parser_lambda" {
 }
 
 resource "aws_lambda_function" "editorial_integration" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/te-editorial-integration:${var.image_versions.te_editorial_integration}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-editorial-integration:${var.image_versions.te_editorial_integration}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-editorial-integration"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
