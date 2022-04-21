@@ -23,12 +23,12 @@ resource "aws_iam_role_policy_attachment" "lambda_retrieve_bagit_role_policy" {
 
 
 resource "aws_iam_role" "tre_slack_alerts_lambda_role" {
-  name = "${var.env}-${var.prefix}-slack-alerts-lambda-role"
+  name               = "${var.env}-${var.prefix}-slack-alerts-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "tre_slack_alrets_policy" {
-  role = aws_iam_role.tre_slack_alerts_lambda_role.name
+  role       = aws_iam_role.tre_slack_alerts_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
 
@@ -143,11 +143,11 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
-    "kms:GenerateDataKey*", 
+      "kms:GenerateDataKey*",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
-      var.tdr_queue_kms_key 
+      var.tdr_queue_kms_key
     ]
   }
 }
@@ -156,35 +156,35 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
 
 data "aws_iam_policy_document" "editorial_sns_topic_policy" {
   statement {
-    actions = [ "sns:Publish" ]
-    effect = "Allow"
+    actions = ["sns:Publish"]
+    effect  = "Allow"
     principals {
-      type = "AWS"
-      identifiers = [ aws_sfn_state_machine.tdr_state_machine.role_arn ]
+      type        = "AWS"
+      identifiers = [aws_sfn_state_machine.tdr_state_machine.role_arn]
     }
-    resources = [ aws_sns_topic.editorial_sns.arn ]
+    resources = [aws_sns_topic.editorial_sns.arn]
   }
 
   statement {
-    sid = "SNS Subscription for Editorial"
-    actions = [ "sns:Subscribe" ]
-    effect = "Allow"
+    sid     = "SNS Subscription for Editorial"
+    actions = ["sns:Subscribe"]
+    effect  = "Allow"
     principals {
-      type = "AWS"
-      identifiers = [ var.editorial_sns_sub_arn ]
+      type        = "AWS"
+      identifiers = [var.editorial_sns_sub_arn]
     }
-    resources = [ aws_sns_topic.editorial_sns.arn ]
+    resources = [aws_sns_topic.editorial_sns.arn]
   }
 }
 
 data "aws_iam_policy_document" "tre_slack_alerts_sns_topic_policy" {
   statement {
-    actions = [ "sns:Publish" ]
-    effect = "Allow"
+    actions = ["sns:Publish"]
+    effect  = "Allow"
     principals {
-      type = "AWS"
-      identifiers = [ aws_sfn_state_machine.tdr_state_machine.role_arn ]
+      type        = "AWS"
+      identifiers = [aws_sfn_state_machine.tdr_state_machine.role_arn]
     }
-    resources = [ aws_sns_topic.tre_slack_alerts.arn ]
+    resources = [aws_sns_topic.tre_slack_alerts.arn]
   }
 }

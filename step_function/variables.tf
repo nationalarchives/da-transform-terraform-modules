@@ -5,7 +5,7 @@ variable "env" {
 
 variable "prefix" {
   description = "Transformation Engine prefix"
-  type = string
+  type        = string
 }
 
 variable "tdr_sqs_queue_endpoint" {
@@ -20,29 +20,29 @@ variable "tdr_sqs_queue_arn" {
 
 variable "tdr_queue_kms_key" {
   description = "ARN of the KMS Key for TDR SQS Queue "
-  type = string
+  type        = string
 }
 
 variable "tdr_trigger_queue_arn" {
   description = "ARN of the tdr trigger queue"
-  type = string
+  type        = string
 }
 
 variable "editorial_retry_trigger_arn" {
   description = "ARN of the editorial retry trigger queue"
-  type = string
+  type        = string
 }
 
 variable "editorial_sns_sub_arn" {
   description = "ARN of the editorial SNS Subscription role"
-  type = string
+  type        = string
 }
 
 
 
 variable "account_id" {
   description = "Account ID where Image for the Lambda function will be"
-  type = string
+  type        = string
 }
 
 variable "image_versions" {
@@ -51,9 +51,9 @@ variable "image_versions" {
     te_bagit_checksum_validation = string
     te_files_checksum_validation = string
     te_text_parser_step_function = string
-    te_editorial_integration = string
-    te_text_parser = string
-    tre_slack_alerts = string
+    te_editorial_integration     = string
+    te_text_parser               = string
+    tre_slack_alerts             = string
   })
 }
 
@@ -61,15 +61,15 @@ variable "image_versions" {
 
 variable "slack_webhook_url" {
   description = "Webhook URL for tre slack alerts"
-  type = string
+  type        = string
 }
 
 variable "slack_channel" {
   description = "Channel name for the tre slack alerts"
-  type = string
+  type        = string
 }
 
 variable "slack_username" {
   description = "Username for tre slack alerts"
-  type = string
+  type        = string
 }
