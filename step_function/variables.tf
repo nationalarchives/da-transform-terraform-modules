@@ -50,9 +50,9 @@ variable "image_versions" {
   type = object({
     tre_bagit_checksum_validation = string
     tre_files_checksum_validation = string
-    tre_text_parser_step_function = string
+    tre_prepare_parser_input = string
     tre_editorial_integration = string
-    tre_text_parser = string
+    tre_run_judgment_parser = string
     tre_slack_alerts = string
   })
 }

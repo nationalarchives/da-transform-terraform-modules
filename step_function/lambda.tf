@@ -35,7 +35,7 @@ resource "aws_lambda_function" "bagit_files_checksum_function" {
 }
 
 resource "aws_lambda_function" "prepare_parser_input" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-prepare-parser-input:${var.image_versions.tre_text_parser_step_function}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-prepare-parser-input:${var.image_versions.tre_prepare_parser_input}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-prepare-parser-input"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
@@ -55,7 +55,7 @@ resource "aws_lambda_function" "prepare_parser_input" {
 # Run Parser Function
 
 resource "aws_lambda_function" "judgment_parser_lambda" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-run-judgment-parser:${var.image_versions.tre_text_parser}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-run-judgment-parser:${var.image_versions.tre_run_judgment_parser}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-run-judgment-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
