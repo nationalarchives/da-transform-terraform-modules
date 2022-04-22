@@ -72,7 +72,8 @@ resource "aws_lambda_function" "editorial_integration" {
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-editorial-integration"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
-  timeout = 30
+  memory_size = 512
+  timeout = 900
   environment {
     variables = {
       "TE_VERSION_JSON" = jsonencode({"int-${var.prefix}-version": "0.0.0", "text-parser-version": "v0.0", "lambda-functions-version": [ { "int-${var.prefix}-bagit-checksum-validation": "0.0.0" }, { "int-${var.prefix}-files-checksum-validation": "0.0.0" }, { "int-text-parser-version": "v0.0" } ]})
