@@ -54,7 +54,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
-        "Error.$": "$.Error",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.Cause"
       }
     },
@@ -87,7 +87,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
-        "Error.$": "$.Error",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.Cause"
       }
     },
@@ -120,7 +120,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
-        "Error.$": "$.Error",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.Cause"
       }
     },
@@ -130,7 +130,7 @@
         {
           "Variable": "$.error",
           "BooleanEquals": false,
-          "Next": "Parallel"
+          "Next": "Run Parser And Pass Context"
         }
       ],
       "Default": "Parser Input error"
@@ -141,6 +141,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.error-message"
       }
     },
@@ -153,7 +154,7 @@
       },
       "Next": "Prepare Parser Input Failed"
     },
-    "Parallel": {
+    "Run Parser And Pass Context": {
       "Type": "Parallel",
       "Next": "EditorialIntegration",
       "Branches": [
@@ -180,7 +181,7 @@
                   "MaxAttempts": 3
                 }
               ],
-              "Next": "Check Parser Result",
+              "Next": "Parser Output Processing",
               "Catch": [
                 {
                   "ErrorEquals": [
@@ -192,37 +193,15 @@
             },
             "Judgment Parser Function Error": {
               "Type": "Pass",
-              "Next": "Parser Error Slack Alerts",
+              "Next": "Parser Function Error Slack Alerts",
               "Parameters": {
                 "Execution.$": "$$.Execution.Name",
                 "StateMachine.$": "$$.StateMachine.Name",
-                "Error.$": "$.Error",
+                "ErrorType.$": "$$.State.Name",
                 "ErrorMessage.$": "$.Cause"
               }
             },
-            "Check Parser Result": {
-              "Type": "Choice",
-              "Choices": [
-                {
-                  "Not": {
-                    "Variable": "$.parser-outputs.error-messages[0]",
-                    "IsPresent": true
-                  },
-                  "Next": "Parser OK"
-                }
-              ],
-              "Default": "Parser Error"
-            },
-            "Parser Error": {
-              "Type": "Pass",
-              "Next": "Parser Error Slack Alerts",
-              "Parameters": {
-                "Execution.$": "$$.Execution.Name",
-                "StateMachine.$": "$$.StateMachine.Name",
-                "ErrorMessage.$": "$.parser-outputs.error-messages"
-              }
-            },
-            "Parser Error Slack Alerts": {
+            "Parser Function Error Slack Alerts": {
               "Type": "Task",
               "Resource": "arn:aws:states:::sns:publish",
               "Parameters": {
@@ -231,8 +210,60 @@
               },
               "Next": "Parser Failed"
             },
-            "Parser OK": {
-              "Type": "Pass",
+            "Parser Output Processing": {
+              "Type": "Parallel",
+              "Branches": [
+                {
+                  "StartAt": "Parser Output Passthrough",
+                  "States": {
+                    "Parser Output Passthrough": {
+                      "Type": "Pass",
+                      "End": true
+                    }
+                  }
+                },
+                {
+                  "StartAt": "Check For Parser Error(s)",
+                  "States": {
+                    "Check For Parser Error(s)": {
+                      "Type": "Choice",
+                      "Choices": [
+                        {
+                          "Variable": "$.parser-outputs.error-messages[0]",
+                          "IsPresent": true,
+                          "Next": "Parser Error"
+                        }
+                      ],
+                      "Default": "Pass Empty Object"
+                    },
+                    "Pass Empty Object": {
+                      "Type": "Pass",
+                      "End": true,
+                      "Result": {},
+                      "Comment": "Default path is required, so just pass an empty JSON object"
+                    },
+                    "Parser Error": {
+                      "Type": "Pass",
+                      "Parameters": {
+                        "Execution.$": "$$.Execution.Name",
+                        "StateMachine.$": "$$.StateMachine.Name",
+                        "ErrorType.$": "$$.State.Name",
+                        "ErrorMessage.$": "$.parser-outputs.error-messages"
+                      },
+                      "Next": "Parser Error Slack Alerts"
+                    },
+                    "Parser Error Slack Alerts": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:states:::sns:publish",
+                      "Parameters": {
+                        "Message.$": "$",
+                        "TopicArn": "${tre-slack-alerts-sns}"
+                      },
+                      "End": true
+                    }
+                  }
+                }
+              ],
               "End": true
             },
             "Parser Failed": {
@@ -245,11 +276,13 @@
           "States": {
             "Pass Context": {
               "Type": "Pass",
-              "End": true
+              "End": true,
+              "Comment": "Pass parameters context and parser-inputs to next step"
             }
           }
         }
-      ]
+      ],
+      "Comment": "Input is filtered for run parser; the Pass Context flow merges it back"
     },
     "Prepare Parser Input Failed": {
       "Type": "Fail"
@@ -261,16 +294,6 @@
       "Type": "Task",
       "Resource": "${editorial_integration_lambda}",
       "Next": "Editorial SNS Publish",
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "States.TaskFailed"
-          ],
-          "BackoffRate": 1,
-          "IntervalSeconds": 1,
-          "MaxAttempts": 3
-        }
-      ],
       "Catch": [
         {
           "ErrorEquals": [
@@ -286,7 +309,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
-        "Error.$": "$.Error",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.Cause"
       }
     },
@@ -306,8 +329,25 @@
         "Message.$": "$",
         "TopicArn": "${editorial_sns_topic_arn}"
       },
-      "End": true,
-      "InputPath": "$.editorial-output"
+      "InputPath": "$.editorial-output",
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Pass",
+      "Next": "Success Alert",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name"
+      }
+    },
+    "Success Alert": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "End": true
     },
     "Bagit validation error?": {
       "Type": "Choice",
@@ -347,6 +387,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.error-message"
       }
     },
@@ -407,6 +448,7 @@
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
         "ErrorMessage.$": "$.error-message"
       }
     },
