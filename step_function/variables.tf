@@ -48,11 +48,11 @@ variable "account_id" {
 variable "image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
-    te_bagit_checksum_validation = string
-    te_files_checksum_validation = string
-    te_text_parser_step_function = string
-    te_editorial_integration = string
-    te_text_parser = string
+    tre_bagit_checksum_validation = string
+    tre_files_checksum_validation = string
+    tre_prepare_parser_input = string
+    tre_editorial_integration = string
+    tre_run_judgment_parser = string
     tre_slack_alerts = string
   })
 }
