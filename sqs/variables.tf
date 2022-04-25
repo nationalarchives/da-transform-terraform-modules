@@ -29,7 +29,7 @@ variable "account_id" {
 variable "image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
-    te_step_function_trigger = string
+    tre_step_function_trigger = string
   })
 }
 
