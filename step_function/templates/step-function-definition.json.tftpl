@@ -469,6 +469,39 @@
       },
       "OutputPath": "$.body"
     },
+    "Exceeded Editorial Retry Limit Check": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.number-of-retries",
+          "NumericLessThan": 5,
+          "Next": "EditorialIntegration"
+        }
+      ],
+      "Default": "Exceeded Editorial Retry Limit Check Error"
+    },
+    "Exceeded Editorial Retry Limit Check Error": {
+      "Type": "Pass",
+      "Next": "Exceeded Editorial Retry Limit Check Slack Alerts",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage": "Exceeded Editorial Retry Limit"
+      }
+    },
+    "Exceeded Editorial Retry Limit Check Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "Next": "Exceeded Editorial Retry Limit"
+    },
+    "Exceeded Editorial Retry Limit": {
+      "Type": "Fail"
+    },
     "SendMessage to TDR for files": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sqs:sendMessage",
