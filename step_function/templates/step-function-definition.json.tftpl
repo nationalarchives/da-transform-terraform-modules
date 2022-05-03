@@ -268,7 +268,7 @@
                       "Type": "Task",
                       "Resource": "arn:aws:states:::sns:publish",
                       "Parameters": {
-                        "TopicArn": "${tre-slack-alerts-sns}"
+                        "TopicArn": "${tre-slack-alerts-sns}",
                         "Message": {
                           "Execution.$": "$$.Execution.Name",
                           "StateMachine.$": "$$.StateMachine.Name",
@@ -407,7 +407,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
         "Message": {
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
@@ -490,7 +490,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
         "Message": {
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
