@@ -317,11 +317,11 @@
           "ErrorEquals": [
             "States.TaskFailed"
           ],
-          "Next": "Editorial Integration Error Slack Alerts (1)"
+          "Next": "Editorial Integration Error Slack Alerts"
         }
       ]
     },
-    "Editorial Integration Error Slack Alerts (1)": {
+    "Editorial Integration Error Slack Alerts": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
