@@ -149,8 +149,14 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "Parser Input Function Error"
+        }
       },
       "Next": "Prepare Parser Input Failed"
     },
@@ -205,8 +211,14 @@
               "Type": "Task",
               "Resource": "arn:aws:states:::sns:publish",
               "Parameters": {
-                "Message.$": "$",
-                "TopicArn": "${tre-slack-alerts-sns}"
+                "TopicArn": "${tre-slack-alerts-sns}",
+                "Message": {
+                  "Execution.$": "$$.Execution.Name",
+                  "StateMachine.$": "$$.StateMachine.Name",
+                  "Status": "error",
+                  "ErrorMessage.$": "$.ErrorMessage",
+                  "Event": "Parser Function Error"
+                }
               },
               "Next": "Parser Failed"
             },
@@ -256,8 +268,14 @@
                       "Type": "Task",
                       "Resource": "arn:aws:states:::sns:publish",
                       "Parameters": {
-                        "Message.$": "$",
-                        "TopicArn": "${tre-slack-alerts-sns}"
+                        "TopicArn": "${tre-slack-alerts-sns}",
+                        "Message": {
+                          "Execution.$": "$$.Execution.Name",
+                          "StateMachine.$": "$$.StateMachine.Name",
+                          "Status": "error",
+                          "ErrorMessage.$": "$.ErrorMessage",
+                          "Event": "Parser Error"
+                        }
                       },
                       "End": true
                     }
@@ -299,26 +317,23 @@
           "ErrorEquals": [
             "States.TaskFailed"
           ],
-          "Next": "Editorial Integration Function Error"
+          "Next": "Editorial Integration Error Slack Alerts"
         }
       ]
     },
-    "Editorial Integration Function Error": {
-      "Type": "Pass",
-      "Next": "Editorial Integration Error Slack Alerts (1)",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.Cause"
-      }
-    },
-    "Editorial Integration Error Slack Alerts (1)": {
+    "Editorial Integration Error Slack Alerts": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "ErrorType.$": "$$.State.Name",
+          "ErrorMessage.$": "$.Cause",
+          "Status": "error",
+          "Event": "Editorial Integration Error"
+        }
       },
       "Next": "Editorial Integration Failed"
     },
@@ -330,22 +345,19 @@
         "TopicArn": "${editorial_sns_topic_arn}"
       },
       "InputPath": "$.editorial-output",
-      "Next": "Success"
-    },
-    "Success": {
-      "Type": "Pass",
-      "Next": "Success Alert",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name"
-      }
+      "Next": "Success Alert"
     },
     "Success Alert": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "success",
+          "Event": "Editorial Message Sent"
+        }
       },
       "End": true
     },
@@ -395,8 +407,14 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "BagIt Checksum Error"
+        }
       },
       "Next": "BagIt checksum failed"
     },
@@ -407,8 +425,24 @@
         "MessageBody.$": "$",
         "QueueUrl": "${tdr_sqs_queue_endpoint}"
       },
-      "End": true,
-      "InputPath": "$.output-message"
+      "InputPath": "$.output-message",
+      "Next": "TDR BagIt Error Slack Alerts",
+      "ResultPath": null
+    },
+    "TDR BagIt Error Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "warning",
+          "ErrorMessage.$": "$.error-message",
+          "Event": "TDR BagIt Error"
+        },
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "End": true
     },
     "Files validation errors?": {
       "Type": "Choice",
@@ -456,18 +490,54 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${tre-slack-alerts-sns}"
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "File Checksum Error"
+        }
       },
       "Next": "Files checksum failed"
     },
     "EditorialRetryMessage": {
       "Type": "Pass",
-      "Next": "EditorialIntegration",
+      "Next": "Exceeded Editorial Retry Limit Check",
       "Parameters": {
         "body.$": "States.StringToJson($.body)"
       },
       "OutputPath": "$.body"
+    },
+    "Exceeded Editorial Retry Limit Check": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.number-of-retries",
+          "NumericLessThan": 5,
+          "Next": "EditorialIntegration"
+        }
+      ],
+      "Default": "Exceeded Editorial Retry Limit Check Slack Alerts"
+    },
+    "Exceeded Editorial Retry Limit Check Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${tre-slack-alerts-sns}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "ErrorType.$": "$$.State.Name",
+          "ErrorMessage": "Exceeded Editorial Retry Limit",
+          "Status": "error",
+          "Event": "Editorial Retry"
+        }
+      },
+      "Next": "Exceeded Editorial Retry Limit"
+    },
+    "Exceeded Editorial Retry Limit": {
+      "Type": "Fail"
     },
     "SendMessage to TDR for files": {
       "Type": "Task",
@@ -476,8 +546,24 @@
         "MessageBody.$": "$",
         "QueueUrl": "${tdr_sqs_queue_endpoint}"
       },
-      "End": true,
-      "InputPath": "$.output-message"
+      "InputPath": "$.output-message",
+      "Next": "TDR Files Error Slack Alerts",
+      "ResultPath": null
+    },
+    "TDR Files Error Slack Alerts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "warning",
+          "ErrorMessage.$": "$.error-message",
+          "Event": "TDR Files Error"
+        },
+        "TopicArn": "${tre-slack-alerts-sns}"
+      },
+      "End": true
     },
     "BagIt checksum failed": {
       "Type": "Fail"
