@@ -59,8 +59,8 @@ resource "aws_lambda_function" "judgment_parser_lambda" {
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-run-judgment-parser"
   role = aws_iam_role.retrieve_bagit_lambda_role.arn
-  memory_size = 512
-  timeout = 300
+  memory_size = 1536
+  timeout = 900
 
   tags = {
     ApplicationType = ".NET"

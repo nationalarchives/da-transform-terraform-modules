@@ -44,5 +44,4 @@ backend-*.conf
 # Igmore files produced by local terratest
 
 go.sum
-
-
+/tmp/
