@@ -76,8 +76,20 @@ resource "aws_lambda_function" "editorial_integration" {
   timeout = 900
   environment {
     variables = {
-      "TE_VERSION_JSON" = jsonencode({"int-${var.prefix}-version": "0.0.0", "text-parser-version": "v0.0", "lambda-functions-version": [ { "int-${var.prefix}-bagit-checksum-validation": "0.0.0" }, { "int-${var.prefix}-files-checksum-validation": "0.0.0" }, { "int-text-parser-version": "v0.0" } ]})
-      "TE_PRESIGNED_URL_EXPIRY" = 60
+      "TRE_VERSION_JSON" = jsonencode(
+        {
+          "${var.env}-${var.prefix}-version": "${var.image_versions.tre_step_function_version}",
+          "lambda-functions-version": [
+            {"${var.env}-${var.prefix}-bagit-checksum-validation": "${var.image_versions.tre_bagit_checksum_validation}"},
+            {"${var.env}-${var.prefix}-files-checksum-validation": "${var.image_versions.tre_files_checksum_validation}"},
+            {"${var.env}-${var.prefix}-prepare-parser-input": "${var.image_versions.tre_prepare_parser_input}"},
+            {"${var.env}-${var.prefix}-editorial-integration": "${var.image_versions.tre_editorial_integration}"},
+            {"${var.env}-${var.prefix}-run-judgments-parser": "${var.image_versions.tre_run_judgment_parser}"},
+            {"${var.env}-${var.prefix}-slack-alerts": "${var.image_versions.tre_slack_alerts}"}
+          ]
+        }
+      )
+      "TRE_PRESIGNED_URL_EXPIRY" = 60
       "S3_BUCKET" = aws_s3_bucket.editorial_judgment_out.bucket
       "S3_OBJECT_ROOT" = "parsed/"
       "S3_FILE_PARSER_META"="te-meta.json"
