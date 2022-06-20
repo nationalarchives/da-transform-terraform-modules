@@ -76,9 +76,10 @@ resource "aws_lambda_function" "editorial_integration" {
   timeout = 900
   environment {
     variables = {
+      "TRE_ENV" = "${var.env}"
+      "TRE_VERSION" = "${var.tre_version}"
       "TRE_VERSION_JSON" = jsonencode(
         {
-          "${var.env}-${var.prefix}-version": "${var.image_versions.tre_step_function_version}",
           "lambda-functions-version": [
             {"${var.env}-${var.prefix}-bagit-checksum-validation": "${var.image_versions.tre_bagit_checksum_validation}"},
             {"${var.env}-${var.prefix}-files-checksum-validation": "${var.image_versions.tre_files_checksum_validation}"},
