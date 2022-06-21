@@ -38,10 +38,13 @@ variable "editorial_sns_sub_arn" {
   type = string
 }
 
-
-
 variable "account_id" {
   description = "Account ID where Image for the Lambda function will be"
+  type = string
+}
+
+variable "tre_version" {
+  description = "TRE Step Function version (update if Step Function flow or called Lambda function versions change)"
   type = string
 }
 
