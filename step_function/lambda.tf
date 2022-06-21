@@ -86,7 +86,7 @@ resource "aws_lambda_function" "editorial_integration" {
             {"${var.env}-${var.prefix}-files-checksum-validation": "${var.image_versions.tre_files_checksum_validation}"},
             {"${var.env}-${var.prefix}-prepare-parser-input": "${var.image_versions.tre_prepare_parser_input}"},
             {"${var.env}-${var.prefix}-editorial-integration": "${var.image_versions.tre_editorial_integration}"},
-            {"${var.env}-${var.prefix}-run-judgments-parser": "${var.image_versions.tre_run_judgment_parser}"},
+            {"${var.env}-${var.prefix}-run-judgment-parser": "${var.image_versions.tre_run_judgment_parser}"},
             {"${var.env}-${var.prefix}-slack-alerts": "${var.image_versions.tre_slack_alerts}"}
           ]
         }
