@@ -77,6 +77,7 @@ resource "aws_lambda_function" "editorial_integration" {
   environment {
     variables = {
       "TRE_ENV" = "${var.env}"
+      "TRE_PREFIX" = "${var.prefix}"
       "TRE_VERSION" = "${var.tre_version}"
       "TRE_VERSION_JSON" = jsonencode(
         {
