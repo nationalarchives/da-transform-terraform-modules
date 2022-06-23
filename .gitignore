@@ -45,3 +45,5 @@ backend-*.conf
 
 go.sum
 /tmp/
+/.idea/
+/*.iml
