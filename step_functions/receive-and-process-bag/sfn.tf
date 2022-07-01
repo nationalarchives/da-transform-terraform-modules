@@ -6,7 +6,7 @@ resource "aws_sfn_state_machine" "receive_and_process_bag" {
       arn_lambda_rapb_files_checksum_validation = aws_lambda_function.rapb_files_checksum_validation.arn
   })
   logging_configuration {
-    log_destination        = "${aws_cloudwatch_log_group.tdr_state_machine_logs.arn}:*"
+    log_destination        = "${aws_cloudwatch_log_group.receive_and_process_bag.arn}:*"
     include_execution_data = true
     level                  = "ALL"
   }
