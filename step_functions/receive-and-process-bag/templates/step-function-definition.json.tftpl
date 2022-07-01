@@ -1,0 +1,215 @@
+{
+  "Comment": "TRE Receive And Process Bag Flow",
+  "StartAt": "Get body field as JSON",
+  "States": {
+    "Get body field as JSON": {
+      "Type": "Pass",
+      "Result": "1",
+      "Next": "BagIt Checksum Validation",
+      "Parameters": {
+        "body.$": "States.StringToJson($.body)"
+      }
+    },
+    "BagIt Checksum Validation": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${arn_lambda_rapb_bagit_checksum_validation}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "BagIt Checksum Validation Output Handler",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Format BagIt Checksum Function Error"
+        }
+      ]
+    },
+    "Format BagIt Checksum Function Error": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Alert BagIt Checksum Validation Failed",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "TODO: Slack Alert BagIt Checksum Validation Failed": {
+      "Type": "Pass",
+      "Next": "BagIt Checksum Validation Failed"
+    },
+    "BagIt Checksum Validation Failed": {
+      "Type": "Fail"
+    },
+    "BagIt Checksum Validation Output Handler": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": true
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "TODO: BagIt Checksum Failure Retry",
+          "Comment": "(error) and (retry < 3)"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": false
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "Files Checksum Validation",
+          "Comment": "(not error) and (retry < 3)"
+        }
+      ],
+      "Default": "Format BagIt Checksum Error"
+    },
+    "Format BagIt Checksum Error": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Alert BagIt Checksum Validation Failed",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.error-message"
+      }
+    },
+    "TODO: BagIt Checksum Failure Retry": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Notification for Bagit Checksum Failure Retry"
+    },
+    "TODO: Slack Notification for Bagit Checksum Failure Retry": {
+      "Type": "Pass",
+      "End": true
+    },
+    "Files Checksum Validation": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${arn_lambda_rapb_files_checksum_validation}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Files Checksum Validation Output Handler",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Format Files Checksum Function Error"
+        }
+      ]
+    },
+    "Format Files Checksum Function Error": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Alert Files Checksum Validation Failed",
+      "Parameters": ""
+    },
+    "TODO: Slack Alert Files Checksum Validation Failed": {
+      "Type": "Pass",
+      "Next": "Files Checksum Validation Failed"
+    },
+    "Files Checksum Validation Output Handler": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": false
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "TODO: Onward Notification here, or make this external to Step Function?",
+          "Comment": "(not error) and (retry < 3)"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.error",
+              "BooleanEquals": true
+            },
+            {
+              "Variable": "$.output-message.number-of-retries",
+              "NumericLessThan": 3
+            }
+          ],
+          "Next": "TODO: Files Checksum Failure Retry",
+          "Comment": "(error) and (retry < 3)"
+        }
+      ],
+      "Default": "Format Files Checksum Error"
+    },
+    "TODO: Files Checksum Failure Retry": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Notification for Files Checksum Failure Retry"
+    },
+    "Format Files Checksum Error": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Alert Files Checksum Validation Failed",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "Files Checksum Validation Failed": {
+      "Type": "Fail"
+    },
+    "TODO: Slack Notification for Files Checksum Failure Retry": {
+      "Type": "Pass",
+      "End": true
+    },
+    "TODO: Onward Notification here, or make this external to Step Function?": {
+      "Type": "Pass",
+      "Next": "TODO: Slack Notification for successful completion?"
+    },
+    "TODO: Slack Notification for successful completion?": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}
