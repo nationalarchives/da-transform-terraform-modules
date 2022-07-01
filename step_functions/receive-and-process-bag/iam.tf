@@ -53,8 +53,9 @@ data "aws_iam_policy_document" "receive_and_process_bag_machine_policies" {
     sid = "InvokeLambdaPolicy"
     effect = "Allow"
     actions = [ "lambda:InvokeFunction" ]
-    resources = [ 
-        
+    resources = [
+        aws_lambda_function.rapb_bagit_checksum_validation.arn,
+        aws_lambda_function.rapb_files_checksum_validation.arn
     ]
   }
 }
