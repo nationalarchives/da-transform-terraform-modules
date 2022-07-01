@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "tdr_out_bucket_policy" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_lambda_function.retrieve_bagit_function.role]
+      identifiers = [aws_lambda_function.retrieve_bagit_function.role, var.receive_process_bag_lambda_access_role]
     }
 
     resources = ["${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn]
@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "state_fucntion_lambda_policy" {
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
-    "kms:GenerateDataKey*", 
+      "kms:GenerateDataKey*", 
     ]
     effect    = "Allow"
     resources = [
