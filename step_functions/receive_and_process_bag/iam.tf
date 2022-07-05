@@ -90,7 +90,7 @@ output "receive_process_bag_lambda_invoke_role" {
 
 # SNS Policies 
 
-data "aws_iam_policy_document" "tre_slack_alerts_sns_topic_policy" {
+data "aws_iam_policy_document" "receive_and_process_bag_out_topic_policy" {
   statement {
     actions = [ "sns:Publish" ]
     effect = "Allow"
