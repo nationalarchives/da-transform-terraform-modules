@@ -87,3 +87,17 @@ output "receive_process_bag_lambda_invoke_role" {
   value = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
   description = "ARN of the Receive and Process Step Function Lambda Invoke Role"
 }
+
+# SNS Policies 
+
+data "aws_iam_policy_document" "tre_slack_alerts_sns_topic_policy" {
+  statement {
+    actions = [ "sns:Publish" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [ aws_sfn_state_machine.receive_and_process_bag.role_arn ]
+    }
+    resources = [ aws_sns_topic.receive_and_process_bag_out.arn ]
+  }
+}
