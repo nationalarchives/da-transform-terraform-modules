@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "receive_and_process_bag_out" {
-  name = "${var.env}-${var.prefix}-receive-and-process-out"
+  name = "${var.env}-${var.prefix}-receive-and-process-bag-out"
   kms_master_key_id = "alias/aws/sns"
 }
 
