@@ -182,6 +182,15 @@
       ],
       "Default": "Format Files Checksum Error"
     },
+    "Receive And Process Out Topic": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${arn_sns_topic_receive_and_process_bag_out}"
+      },
+      "Next": "TODO: Slack Notification for successful completion?"
+    },
     "TODO: Files Checksum Failure Retry": {
       "Type": "Pass",
       "Next": "TODO: Slack Notification for Files Checksum Failure Retry"
@@ -202,10 +211,6 @@
     "TODO: Slack Notification for Files Checksum Failure Retry": {
       "Type": "Pass",
       "End": true
-    },
-    "TODO: Onward Notification here, or make this external to Step Function?": {
-      "Type": "Pass",
-      "Next": "TODO: Slack Notification for successful completion?"
     },
     "TODO: Slack Notification for successful completion?": {
       "Type": "Pass",
