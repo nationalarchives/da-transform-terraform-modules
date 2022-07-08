@@ -1,14 +1,11 @@
 {
   "Comment": "TRE Receive And Process Bag Flow",
-  "StartAt": "Get body field as JSON",
+  "StartAt": "Filter Input",
   "States": {
-    "Get body field as JSON": {
+    "Filter Input": {
       "Type": "Pass",
-      "Result": "1",
       "Next": "BagIt Checksum Validation",
-      "Parameters": {
-        "body.$": "States.StringToJson($.body)"
-      }
+      "InputPath": "$.detail"
     },
     "BagIt Checksum Validation": {
       "Type": "Task",

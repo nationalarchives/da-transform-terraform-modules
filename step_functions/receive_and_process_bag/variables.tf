@@ -30,3 +30,8 @@ variable "rapb_image_versions" {
     tre_files_checksum_validation = string
   })
 }
+
+variable "common_tre_slack_alerts_topic_arn" {
+  description = "ARN of the Common TRE Slack Alerts SNS Topic"
+  type = string
+}
