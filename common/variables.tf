@@ -25,10 +25,6 @@ variable "sfn_arns" {
   type = list(string)
 }
 
-variable "sfn_arn" {
-  description = "role ARN for the stepfunction"
-}
-
 # Slack
 
 variable "slack_webhook_url" {
