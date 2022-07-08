@@ -9,6 +9,11 @@ resource "aws_iam_role" "receive_and_process_bag" {
   }
 }
 
+output "receive_and_process_bag_role_arn" {
+  value = aws_iam_role.receive_and_process_bag.arn
+  description = "ARN of the receive and process bag Step Function Role"
+}
+
 data "aws_iam_policy_document" "receive_and_process_bag_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]

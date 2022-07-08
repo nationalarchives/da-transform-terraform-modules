@@ -20,8 +20,8 @@ variable "image_versions" {
   })
 }
 
-variable "sfn_arns" {
-  description = "ARNs of the State Machines"
+variable "sfn_role_arns" {
+  description = "ARNs of the State Machine Roles"
   type = list(string)
 }
 

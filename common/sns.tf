@@ -9,7 +9,7 @@ resource "aws_sns_topic_policy" "common_tre_slack_alerts" {
 }
 
 resource "aws_sns_topic_subscription" "common_tre_slack_alerts" {
-  topic_arn = aws_lambda_function.common_tre_slack_alerts.arn
+  topic_arn = aws_sns_topic.common_tre_slack_alerts.arn
   protocol = "lambda"
   endpoint = aws_lambda_function.common_tre_slack_alerts.arn
 }
