@@ -20,6 +20,11 @@ variable "image_versions" {
   })
 }
 
+variable "sfn_arns" {
+  description = "ARNs of the State Machines"
+  type = list(string)
+}
+
 variable "sfn_arn" {
   description = "role ARN for the stepfunction"
 }
