@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "common_tre_in_topic_policy" {
     effect = "Allow"
     principals {
       type = "AWS"
-      identifiers = [ var.sfn_arns ]
+      identifiers = var.sfn_arns
     }
     resources = [ aws_sns_topic.common_tre_in.arn ]
   }
