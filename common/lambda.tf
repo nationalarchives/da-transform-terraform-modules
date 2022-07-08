@@ -18,7 +18,7 @@ resource "aws_lambda_function" "common_tre_slack_alerts" {
   }
 }
 
-resource "aws_lambda_permission" "common_tre_slakc_alerts_sns_trigger_permission" {
+resource "aws_lambda_permission" "common_tre_slack_alerts_sns_trigger_permission" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.common_tre_slack_alerts.function_name
