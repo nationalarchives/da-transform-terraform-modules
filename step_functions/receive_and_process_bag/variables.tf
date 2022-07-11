@@ -45,3 +45,8 @@ variable "tdr_sqs_retry_url" {
   description = "The TDR retry SQS Queue URL"
   type = string
 }
+
+variable "tdr_sqs_retry_arn" {
+  description = "The TDR retry SQS Queue ARN"
+  type = string
+}
