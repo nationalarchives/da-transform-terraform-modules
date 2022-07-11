@@ -257,11 +257,15 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
-        "Message.$": "$",
-        "TopicArn": "${arn_sns_topic_tre_slack_alerts}"
+        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "warning",
+          "ErrorMessage.$": "$.error-message",
+          "Event": "TDR Files Error"
+        }
       },
-      "InputPath": "$.output-message",
-      "ResultPath": null,
       "End": true
     },
     "Format Files Checksum Error": {
