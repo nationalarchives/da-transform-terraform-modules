@@ -39,7 +39,7 @@
     },
     "Format BagIt Checksum Function Error": {
       "Type": "Pass",
-      "Next": "TODO: Slack Alert BagIt Checksum Validation Failed",
+      "Next": "Slack Alert BagIt Checksum Validation Failed",
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
@@ -47,8 +47,19 @@
         "ErrorMessage.$": "$.Cause"
       }
     },
-    "TODO: Slack Alert BagIt Checksum Validation Failed": {
-      "Type": "Pass",
+    "Slack Alert BagIt Checksum Validation Failed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${common_tre_slack_alerts_topic_arn}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "BagIt Checksum Error"
+        }
+      },
       "Next": "BagIt Checksum Validation Failed"
     },
     "BagIt Checksum Validation Failed": {
@@ -68,7 +79,7 @@
               "NumericLessThan": 3
             }
           ],
-          "Next": "TODO: BagIt Checksum Failure Retry",
+          "Next": "TDR SQS Retry BagIt",
           "Comment": "(error) and (retry < 3)"
         },
         {
@@ -90,7 +101,7 @@
     },
     "Format BagIt Checksum Error": {
       "Type": "Pass",
-      "Next": "TODO: Slack Alert BagIt Checksum Validation Failed",
+      "Next": "Slack Alert BagIt Checksum Validation Failed",
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
@@ -98,12 +109,30 @@
         "ErrorMessage.$": "$.error-message"
       }
     },
-    "TODO: BagIt Checksum Failure Retry": {
-      "Type": "Pass",
-      "Next": "TODO: Slack Notification for Bagit Checksum Failure Retry"
+    "TDR SQS Retry BagIt": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "${tdr_sqs_retry_url}"
+      },
+      "Next": "Slack Alert TDR Retry BagIt",
+      "InputPath": "$.output-message",
+      "ResultPath": null
     },
-    "TODO: Slack Notification for Bagit Checksum Failure Retry": {
-      "Type": "Pass",
+    "Slack Alert TDR Retry BagIt": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${common_tre_slack_alerts_topic_arn}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "warning",
+          "ErrorMessage.$": "$.error-message",
+          "Event": "TDR BagIt Error"
+        }
+      },
       "End": true
     },
     "Files Checksum Validation": {
@@ -138,11 +167,22 @@
     },
     "Format Files Checksum Function Error": {
       "Type": "Pass",
-      "Next": "TODO: Slack Alert Files Checksum Validation Failed",
+      "Next": "Slack Alert Files Checksum Validation Failed",
       "Parameters": ""
     },
-    "TODO: Slack Alert Files Checksum Validation Failed": {
-      "Type": "Pass",
+    "Slack Alert Files Checksum Validation Failed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${common_tre_slack_alerts_topic_arn}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "File Checksum Error"
+        }
+      },
       "Next": "Files Checksum Validation Failed"
     },
     "Files Checksum Validation Output Handler": {
@@ -173,7 +213,7 @@
               "NumericLessThan": 3
             }
           ],
-          "Next": "TODO: Files Checksum Failure Retry",
+          "Next": "TDR SQS Retry Files",
           "Comment": "(error) and (retry < 3)"
         }
       ],
@@ -186,15 +226,47 @@
         "Message.$": "$",
         "TopicArn": "${arn_sns_topic_receive_and_process_bag_out}"
       },
-      "Next": "TODO: Slack Notification for successful completion?"
+      "Next": "Slack Alert Completed Successfully"
     },
-    "TODO: Files Checksum Failure Retry": {
-      "Type": "Pass",
-      "Next": "TODO: Slack Notification for Files Checksum Failure Retry"
+    "Slack Alert Completed Successfully": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${common_tre_slack_alerts_topic_arn}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "success",
+          "Event": "Completed successfully"
+        }
+      },
+      "End": true
+    },
+    "TDR SQS Retry Files": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "${tdr_sqs_retry_url}"
+      },
+      "Next": "Slack Alert TDR Retry Files",
+      "InputPath": "$.output-message",
+      "ResultPath": null
+    },
+    "Slack Alert TDR Retry Files": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${common_tre_slack_alerts_topic_arn}"
+      },
+      "InputPath": "$.output-message",
+      "ResultPath": null,
+      "End": true
     },
     "Format Files Checksum Error": {
       "Type": "Pass",
-      "Next": "TODO: Slack Alert Files Checksum Validation Failed",
+      "Next": "Slack Alert Files Checksum Validation Failed",
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
@@ -204,14 +276,6 @@
     },
     "Files Checksum Validation Failed": {
       "Type": "Fail"
-    },
-    "TODO: Slack Notification for Files Checksum Failure Retry": {
-      "Type": "Pass",
-      "End": true
-    },
-    "TODO: Slack Notification for successful completion?": {
-      "Type": "Pass",
-      "End": true
     }
   }
 }
