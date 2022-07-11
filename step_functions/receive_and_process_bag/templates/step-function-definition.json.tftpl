@@ -114,7 +114,7 @@
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
         "MessageBody.$": "$",
-        "QueueUrl": "${tdr_sqs_retry_url}"
+        "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry BagIt",
       "InputPath": "$.output-message",
@@ -247,7 +247,7 @@
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
         "MessageBody.$": "$",
-        "QueueUrl": "${tdr_sqs_retry_url}"
+        "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry Files",
       "InputPath": "$.output-message",
