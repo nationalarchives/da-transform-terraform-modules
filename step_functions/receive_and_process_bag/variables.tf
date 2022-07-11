@@ -40,3 +40,13 @@ variable "common_tre_in_sns_topic_arn" {
   description = "ARN of the Common TRE In SNS Topic"
   type = string
 }
+
+variable "tdr_sqs_retry_url" {
+  description = "The TDR retry SQS Queue URL"
+  type = string
+}
+
+variable "tdr_sqs_retry_arn" {
+  description = "The TDR retry SQS Queue ARN"
+  type = string
+}
