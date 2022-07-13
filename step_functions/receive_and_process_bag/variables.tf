@@ -14,12 +14,14 @@ variable "account_id" {
   type = string
 }
 
-variable "tre_temp_bucket" {
-  description = "TRE Temp Bucket Name"
+variable "tre_data_bucket" {
+  description = "TRE Data Bucket Name"
   type = string
 }
 
 variable "rapb_version" {
+  description = "Receive And Process Bag Step Function version (update if Step Function flow or called Lambda function versions change)"
+  type = string
   
 }
 

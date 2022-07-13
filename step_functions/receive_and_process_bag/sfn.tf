@@ -18,8 +18,3 @@ resource "aws_sfn_state_machine" "receive_and_process_bag" {
     enabled = true
   }
 }
-
-output "receive_and_process_bag_arn" {
-  value = aws_sfn_state_machine.receive_and_process_bag.arn
-  description = "ARN of the receive and process bag step function"
-}
