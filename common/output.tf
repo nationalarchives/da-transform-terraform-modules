@@ -1,5 +1,6 @@
 output "common_tre_in_sns_topic_arn" {
   value = aws_sns_topic.common_tre_in.arn
+  description = "ARN of the Common TRE In SNS Topic"
 }
 
 output "common_tre_slack_alerts_topic_arn" {
