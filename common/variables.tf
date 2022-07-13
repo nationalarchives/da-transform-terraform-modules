@@ -25,6 +25,11 @@ variable "sfn_role_arns" {
   type = list(string)
 }
 
+variable "sfn_lambda_roles" {
+  description = "ARNs of the Step Functions' Lambdas"
+  type = list(string)
+}
+
 # Slack
 
 variable "slack_webhook_url" {

@@ -48,6 +48,8 @@ go.sum
 /*.iml
 
 # Python env and build files
+sqs/*.py
+step_function/*.py
 .venv/
 dist/
 build/

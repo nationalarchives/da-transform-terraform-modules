@@ -7,7 +7,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_temp_bucket
+      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
     }
   }
 
@@ -25,7 +25,7 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_temp_bucket
+      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
     }
   }
 

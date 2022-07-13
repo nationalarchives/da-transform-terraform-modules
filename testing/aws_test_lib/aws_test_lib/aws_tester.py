@@ -131,8 +131,7 @@ class AWSTester():
         logger.info(f'arn={arn}')
 
         if execution_name is None:
-            id = uuid.uuid4().hex
-            execution_name = f'aws_tester_{id}_{name}'[:80]
+            execution_name = f'aws_tester_{uuid.uuid4().hex}_{name}'[:80]
             logger.info(f'execution_name={execution_name}')
 
         if len(execution_name) > 80:
@@ -164,23 +163,22 @@ class AWSTester():
 
         for source_key in source:
             if source_key == current_search_key:  # found matching current key
-                if len(key_path) > 0:  # still have more keys to match
-                    if type(source[source_key]) is dict:
-                        return self.get_dict_key_value(
-                                source=source[source_key],
-                                key_path=key_path)
-                    elif type(source[source_key]) is str:  # check for JSON
-                        try:
-                            json_as_dict = json.loads(source[source_key])
-                            return self.get_dict_key_value(
-                                    source=json_as_dict,
-                                    key_path=key_path)
-                        except ValueError as e:  # not able to look further
-                            return None
-                    else:  # still keys to find, but no records to search
-                        return None
-                else:  # finished
+                if len(key_path) == 0:  # nothing else to find, return result
                     return source[source_key]
+                elif type(source[source_key]) is dict:
+                    return self.get_dict_key_value(
+                            source=source[source_key],
+                            key_path=key_path)
+                elif type(source[source_key]) is str:  # check for JSON
+                    try:
+                        json_as_dict = json.loads(source[source_key])
+                        return self.get_dict_key_value(
+                                source=json_as_dict,
+                                key_path=key_path)
+                    except ValueError:  # not able to look further
+                        return None
+                else:  # still keys to find, but no records to search
+                    return None
 
         return None
 

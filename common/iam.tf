@@ -47,3 +47,18 @@ resource "aws_iam_role_policy_attachment" "common_tre_slack_alerts_policy" {
   role = aws_iam_role.common_tre_slack_alerts_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
+
+# S3 Policy
+
+data "aws_iam_policy_document" "common_tre_data_bucket" {
+  statement {
+    actions = ["s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
+
+    principals {
+      type        = "AWS"
+      identifiers = var.sfn_lambda_roles
+    }
+
+    resources = ["${aws_s3_bucket.common_tre_data.arn}/*", aws_s3_bucket.common_tre_data.arn]
+  }
+}

@@ -9,11 +9,6 @@ resource "aws_iam_role" "receive_and_process_bag" {
   }
 }
 
-output "receive_and_process_bag_role_arn" {
-  value = aws_iam_role.receive_and_process_bag.arn
-  description = "ARN of the receive and process bag Step Function Role"
-}
-
 data "aws_iam_policy_document" "receive_and_process_bag_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -94,11 +89,6 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 resource "aws_iam_role_policy_attachment" "receive_and_process_bag_lambda_role_policy" {
   role       = aws_iam_role.receive_and_process_bag_lambda_invoke_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
-}
-
-output "receive_process_bag_lambda_invoke_role" {
-  value = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
-  description = "ARN of the Receive and Process Step Function Lambda Invoke Role"
 }
 
 # SNS Policies 
