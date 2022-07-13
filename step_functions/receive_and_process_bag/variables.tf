@@ -14,8 +14,8 @@ variable "account_id" {
   type = string
 }
 
-variable "tre_temp_bucket" {
-  description = "TRE Temp Bucket Name"
+variable "tre_data_bucket" {
+  description = "TRE Data Bucket Name"
   type = string
 }
 

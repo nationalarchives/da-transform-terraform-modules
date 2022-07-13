@@ -41,11 +41,6 @@ resource "aws_s3_bucket_public_access_block" "tdr_bagit_out" {
 
 }
 
-
-output "tre_temp_bucket" {
-  value = aws_s3_bucket.tdr_bagit_out.bucket
-  description = "TRE Temp Bucket"
-}
 # editorial judgment-out bucket
 
 resource "aws_s3_bucket" "editorial_judgment_out" {
