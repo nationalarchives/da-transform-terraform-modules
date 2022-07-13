@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 import argparse
 from aws_test_lib.aws_tester import AWSTester
@@ -20,7 +21,7 @@ def main(
 ):
     logger.info(f'main: aws_profile_management={aws_profile_management} '
         f'aws_profile_deployment={aws_profile_deployment} '
-        f'environment_name={environment_name}',
+        f'environment_name={environment_name}'
         f'test_consignment_ref={test_consignment_ref}')
 
     at_managament = AWSTester(aws_profile=aws_profile_management)

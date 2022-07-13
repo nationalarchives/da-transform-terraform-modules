@@ -99,5 +99,11 @@ def test_ok_path(
     assert 's3-object-root' in step_result['output'], f's3-object-root key is missing'
     assert 's3-bagit-name' in step_result['output'], f's3-bagit-name key is missing'
 
-    logger.info('test_ok_path completed OK')
+    end_step_result = at_deployment.get_step_function_step_result(
+          arn=step_function_executions[0]['executionArn'],
+          step_name='Slack Alert Completed Successfully')
 
+    logger.info(f'end_step_result={end_step_result}')
+    http_status_code = end_step_result['output']['SdkHttpMetadata']['HttpStatusCode']
+    assert http_status_code == 200, f'Expected HTTP status code 200 but got "{http_status_code}"'
+    logger.info('test_ok_path completed OK')
