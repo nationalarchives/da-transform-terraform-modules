@@ -23,7 +23,7 @@ def test_ok_path(
         f'consignment_type={consignment_type}')
 
     s3_test_data_bucket = 'dev-te-testdata'  # management account
-    s3_output_bucket = f'{env}-tre-temp'  # deployment account
+    s3_output_bucket = f'{env}-tre-common-data'  # deployment account
 
     # Remove any data from prior run of the consignment ref
     s3_delete_prefix = f'consignments/{consignment_type}/{consignment_ref}/'
