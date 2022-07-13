@@ -45,7 +45,6 @@ data "aws_iam_policy_document" "tdr_out_bucket_policy" {
 
     resources = ["${aws_s3_bucket.tdr_bagit_out.arn}/*", aws_s3_bucket.tdr_bagit_out.arn]
   }
-
 }
 
 data "aws_iam_policy_document" "editorial_judgment_out_bucket_policy" {

@@ -1,0 +1,19 @@
+output "receive_process_bag_lambda_invoke_role" {
+  value = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
+  description = "ARN of the Receive and Process Step Function Lambda Invoke Role"
+}
+
+output "receive_and_process_bag_role_arn" {
+  value = aws_iam_role.receive_and_process_bag.arn
+  description = "ARN of the receive and process bag Step Function Role"
+}
+
+output "receive_and_process_bag_arn" {
+  value = aws_sfn_state_machine.receive_and_process_bag.arn
+  description = "ARN of the receive and process bag step function"
+}
+
+output "receive_and_process_bag_out_sns_topic" {
+  value = aws_sns_topic.receive_and_process_bag_out.arn
+  description = "ARN of the receive and process bag out SNS Topic"
+}
