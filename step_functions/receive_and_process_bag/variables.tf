@@ -20,6 +20,8 @@ variable "tre_data_bucket" {
 }
 
 variable "rapb_version" {
+  description = "Receive And Process Bag Step Function version (update if Step Function flow or called Lambda function versions change)"
+  type = string
   
 }
 
