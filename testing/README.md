@@ -1,0 +1,47 @@
+# Instructions
+
+## 1. Setup Python virtual environment
+
+If using VSCode, run this in VSCode's terminal and IDE will offer to adopt it:
+
+```
+# In project root
+python3 -m venv .venv
+```
+
+```
+# Activate venv (run 'deactivate' to disable):
+. ./.venv/bin/activate
+```
+
+## 2. Install required libraries
+
+```
+pip3 install wheel
+pip3 install boto3
+```
+
+## 2. Build and install aws_test_lib
+
+```
+cd testing/aws_test_lib
+./build.sh && ./reinstall.sh
+```
+
+## 4. Run a test
+
+For example, for receive_and_process_bag tests, run the following in the
+project's root folder:
+
+```
+# In project root
+aws_profile_management='...'
+aws_profile_deployment='...'
+test_consignment_ref='...'
+
+python3 testing/step_functions/receive_and_process_bag/run_tests.py \
+  "--aws_profile_management=${aws_profile_management}" \
+  "--aws_profile_deployment=${aws_profile_deployment}" \
+  --environment_name=dev \
+  "--test_consignment_ref=${test_consignment_ref}"
+```

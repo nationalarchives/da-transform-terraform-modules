@@ -39,7 +39,6 @@ terraform.rc
 backend-*.conf
 # Ignore function zip files
 *.zip
-*.py
 
 # Igmore files produced by local terratest
 
@@ -47,3 +46,11 @@ go.sum
 /tmp/
 /.idea/
 /*.iml
+
+# Python env and build files
+sqs/*.py
+step_function/*.py
+.venv/
+dist/
+build/
+*.egg-info/
