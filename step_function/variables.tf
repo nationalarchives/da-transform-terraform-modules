@@ -76,10 +76,3 @@ variable "slack_username" {
   description = "Username for tre slack alerts"
   type = string
 }
-
-# S3
-
-variable "receive_process_bag_lambda_access_role" {
-  description = "Lambda role to access TRE Temp Bucket"
-  type = string
-}
