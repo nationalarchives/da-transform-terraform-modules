@@ -89,9 +89,9 @@ resource "aws_iam_role" "rapb_trigger_lambda" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "rapb_trigger_lambda_CW_logs" {
+resource "aws_iam_role_policy_attachment" "rapb_trigger_lambda_sqs" {
   role = aws_iam_role.rapb_trigger_lambda.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 }
 
 # Lambda policy documents
