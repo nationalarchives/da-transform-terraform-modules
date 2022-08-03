@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "common_tre_slack_alerts_sns_topic_policy" {
   }
 }
 
-data "aws_iam_policy_document" "common_tre_in_topic_policy" {
+data "aws_iam_policy_document" "tre_in_topic_policy" {
   statement {
     actions = [ "sns:Publish" ]
     effect = "Allow"
@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "common_tre_in_topic_policy" {
       type = "AWS"
       identifiers = var.sfn_role_arns
     }
-    resources = [ aws_sns_topic.common_tre_in.arn ]
+    resources = [ aws_sns_topic.tre_in.arn ]
   }
 }
 

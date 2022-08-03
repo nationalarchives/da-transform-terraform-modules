@@ -68,12 +68,33 @@ data "aws_iam_policy_document" "receive_and_process_bag_machine_policies" {
   }
 }
 
-# Lambda Roles and Policies
+# Lambda Roles
 
 resource "aws_iam_role" "receive_and_process_bag_lambda_invoke_role" {
   name               = "${var.env}-${var.prefix}-receive-and-process-bag-lambda-invoke-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
+
+resource "aws_iam_role_policy_attachment" "receive_and_process_bag_lambda_role_policy" {
+  role       = aws_iam_role.receive_and_process_bag_lambda_invoke_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
+}
+
+resource "aws_iam_role" "rapb_trigger_lambda" {
+  name = "${var.env}-${var.prefix}-rapb-trigger-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
+  inline_policy {
+    name = "${var.env}-${var.env}-rapb-trigger"
+    policy = data.aws_iam_policy_document.rapb_trigger.json
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "rapb_trigger_lambda_CW_logs" {
+  role = aws_iam_role.rapb_trigger_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
+}
+
+# Lambda policy documents
 
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
   statement {
@@ -86,9 +107,30 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "receive_and_process_bag_lambda_role_policy" {
-  role       = aws_iam_role.receive_and_process_bag_lambda_invoke_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
+data "aws_iam_policy_document" "rapb_trigger" {
+  statement {
+    actions   = ["states:StartExecution"]
+    effect    = "Allow"
+    resources = [ aws_sfn_state_machine.receive_and_process_bag.arn ]
+  }
+}
+
+# SQS Policies
+
+data "aws_iam_policy_document" "tre_rapb_queue_in" {
+  statement {
+    actions = ["sqs:SendMessage"]
+    effect  = "Allow"
+    principals {
+      type = "Service"
+      identifiers = [
+        "sns.amazonaws.com"
+      ]
+    }
+    resources = [
+      aws_sqs_queue.tre_rapb_in.arn
+    ]
+  }
 }
 
 # SNS Policies 

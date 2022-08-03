@@ -46,3 +46,8 @@ variable "slack_username" {
   description = "Username for tre slack alerts"
   type = string
 }
+
+variable "tre_rapb_in_queue_arn" {
+  description = "ARN of the tre-rapb-in SQS Queue"
+  type = string
+}
