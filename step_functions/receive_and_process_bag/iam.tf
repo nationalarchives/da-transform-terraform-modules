@@ -128,7 +128,7 @@ data "aws_iam_policy_document" "tre_rapb_queue_in" {
       ]
     }
     resources = [
-      aws_sqs_queue.tdr_message_queue.arn
+      aws_sqs_queue.tre_rapb_in.arn
     ]
   }
 }
