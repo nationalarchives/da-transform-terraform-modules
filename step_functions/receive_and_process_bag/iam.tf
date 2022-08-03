@@ -84,7 +84,7 @@ resource "aws_iam_role" "rapb_trigger_lambda" {
   name = "${var.env}-${var.prefix}-rapb-trigger-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
   inline_policy {
-    name = "${var.env}-${var.env}-rapb-trigger"
+    name = "${var.env}-${var.prefix}-rapb-trigger"
     policy = data.aws_iam_policy_document.rapb_trigger.json
   }
 }
