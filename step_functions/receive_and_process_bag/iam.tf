@@ -90,7 +90,7 @@ resource "aws_iam_role" "rapb_trigger_lambda" {
 }
 
 resource "aws_iam_role_policy_attachment" "rapb_trigger_lambda_CW_logs" {
-  role = aws_iam_role.rapb_trigger_lambda_role.name
+  role = aws_iam_role.rapb_trigger_lambda.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
 
