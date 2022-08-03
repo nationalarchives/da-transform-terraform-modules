@@ -7,7 +7,7 @@ resource "aws_sqs_queue" "tre_rapb_in" {
   sqs_managed_sse_enabled = true
 }
 
-resource "aws_sqs_queue_policy" "name" {
+resource "aws_sqs_queue_policy" "tre_rapb_in" {
   queue_url = aws_sqs_queue.tre_rapb_in.id
   policy    = data.aws_iam_policy_document.tre_rapb_queue_in.json
 }
