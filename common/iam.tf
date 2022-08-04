@@ -18,7 +18,16 @@ data "aws_iam_policy_document" "tre_in_topic_policy" {
     effect = "Allow"
     principals {
       type = "AWS"
-      identifiers = var.sfn_role_arns
+      identifiers = var.tre_in_publishers
+    }
+    resources = [ aws_sns_topic.tre_in.arn ]
+  }
+  statement {
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = var.tre_in_subscribers
     }
     resources = [ aws_sns_topic.tre_in.arn ]
   }
