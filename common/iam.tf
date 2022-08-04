@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "common_tre_slack_alerts_sns_topic_policy" {
 
 data "aws_iam_policy_document" "tre_in_topic_policy" {
   statement {
+    sid = "TRE-InPublishers"
     actions = [ "sns:Publish" ]
     effect = "Allow"
     principals {
@@ -23,6 +24,7 @@ data "aws_iam_policy_document" "tre_in_topic_policy" {
     resources = [ aws_sns_topic.tre_in.arn ]
   }
   statement {
+    sid = "TRE-InSubscribers"
     actions = [ "sns:Subscribe" ]
     effect = "Allow"
     principals {
