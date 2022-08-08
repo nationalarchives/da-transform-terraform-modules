@@ -54,5 +54,5 @@ resource "aws_sns_topic" "tre_out" {
 
 resource "aws_sns_topic_policy" "tre_out" {
   arn = aws_sns_topic.tre_out.arn
-  policy = ""
+  policy = data.aws_iam_policy_document.tre_out_topic_policy.json
 }
