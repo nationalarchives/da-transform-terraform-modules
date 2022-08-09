@@ -35,6 +35,52 @@ data "aws_iam_policy_document" "tre_in_topic_policy" {
   }
 }
 
+data "aws_iam_policy_document" "tre_out_topic_policy" {
+  statement {
+    sid = "TRE-OutPublishers"
+    actions = [ "sns:Publish" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = var.tre_out_publishers
+    }
+    resources = [ aws_sns_topic.tre_out.arn ]
+  }
+  statement {
+    sid = "TRE-OutSubscribers"
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = var.tre_out_subscribers
+    }
+    resources = [ aws_sns_topic.tre_out.arn ]
+  }
+}
+
+data "aws_iam_policy_document" "tre_internal_topic_policy" {
+  statement {
+    sid = "TRE-InternalPublishers"
+    actions = [ "sns:Publish" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = var.tre_internal_publishers
+    }
+    resources = [ aws_sns_topic.tre_internal.arn ]
+  }
+  statement {
+    sid = "TRE-InternalSubscribers"
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = var.tre_internal_subscribers
+    }
+    resources = [ aws_sns_topic.tre_internal.arn ]
+  }  
+}
+
 
 # Lambda Policies
 

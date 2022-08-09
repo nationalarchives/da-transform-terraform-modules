@@ -30,8 +30,6 @@ variable "sfn_lambda_roles" {
   type = list(string)
 }
 
-# Slack
-
 variable "slack_webhook_url" {
   description = "Webhook URL for tre slack alerts"
   type = string
@@ -59,5 +57,25 @@ variable "tre_in_publishers" {
 
 variable "tre_in_subscribers" {
   description = "Roles that have permission to subscribe to tre-in topic"
+  type = list(string)
+}
+
+variable "tre_internal_publishers" {
+  description = "Roles that have permission to publish messages to tre-internal topic"
+  type = list(string)  
+}
+
+variable "tre_internal_subscribers" {
+  description = "Roles that have permission to subscribe to tre-internal topic"
+  type = list(string)  
+}
+
+variable "tre_out_publishers" {
+  description = "Roles that have permission to publish messages to tre-out topic"
+  type = list(string)
+}
+
+variable "tre_out_subscribers" {
+  description = "Roles that have permission to subscribe to tre-out topic"
   type = list(string)
 }
