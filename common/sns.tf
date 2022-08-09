@@ -31,3 +31,28 @@ resource "aws_sns_topic_subscription" "tre_in" {
   protocol = "sqs"
   endpoint = "${var.tre_rapb_in_queue_arn}"
 }
+
+# TRE Internal SNS Topic
+
+resource "aws_sns_topic" "tre_internal" {
+  name = "${var.env}-${var.prefix}-internal"
+  kms_master_key_id = "alias/aws/sns"
+}
+
+resource "aws_sns_topic_policy" "tre_internal" {
+  arn = aws_sns_topic.tre_internal.arn
+  policy = data.aws_iam_policy_document.tre_internal_topic_policy.json
+}
+
+
+# TRE Out SNS Topic
+
+resource "aws_sns_topic" "tre_out" {
+  name = "${var.env}-${var.prefix}-out"
+  kms_master_key_id = "alais/aws/sns"
+}
+
+resource "aws_sns_topic_policy" "tre_out" {
+  arn = aws_sns_topic.tre_out.arn
+  policy = data.aws_iam_policy_document.tre_out_topic_policy.json
+}
