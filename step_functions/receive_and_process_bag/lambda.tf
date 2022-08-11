@@ -13,7 +13,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
         ".",
         [
           local.step_function_name,
-          aws_lambda_function.rapb_bagit_checksum_validation.function_name
+          local.lambda_name_bagit_validation
         ]
       )
       "TRE_ENVIRONMENT" = var.env
