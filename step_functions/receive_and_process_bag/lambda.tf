@@ -22,8 +22,6 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
       "TRE_PROCESS_NAME" = join(
         ".",
         [
-          var.env,
-          var.prefix,
           aws_sfn_state_machine.receive_and_process_bag.name,
           aws_lambda_function.rapb_bagit_checksum_validation.function_name
         ]
