@@ -48,3 +48,8 @@ variable "tdr_sqs_retry_arn" {
   description = "The TDR retry SQS Queue ARN"
   type = string
 }
+
+variable "common_tre_internal_topic_arn" {
+  description = "The TRE internal SNS topic ARN"
+  type = string
+}
