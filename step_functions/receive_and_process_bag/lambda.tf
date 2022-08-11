@@ -7,7 +7,33 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
+      "TRE_S3_BUCKET" = var.tre_data_bucket
+    }
+  }
+
+  environment {
+    variables = {
+      "TRE_SYSTEM_NAME" = upper(var.prefix)
+    }
+  }
+
+  environment {
+    variables = {
+      "TRE_PROCESS_NAME" = join(
+        ".",
+        [
+          var.env,
+          var.prefix,
+          aws_sfn_state_machine.receive_and_process_bag.name,
+          aws_lambda_function.rapb_bagit_checksum_validation.function_name
+        ]
+      )
+    }
+  }
+
+  environment {
+    variables = {
+      "TRE_ENVIRONMENT" = var.env
     }
   }
 
