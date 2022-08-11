@@ -8,17 +8,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
   environment {
     variables = {
       "TRE_S3_BUCKET" = var.tre_data_bucket
-    }
-  }
-
-  environment {
-    variables = {
       "TRE_SYSTEM_NAME" = upper(var.prefix)
-    }
-  }
-
-  environment {
-    variables = {
       "TRE_PROCESS_NAME" = join(
         ".",
         [
@@ -26,11 +16,6 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
           aws_lambda_function.rapb_bagit_checksum_validation.function_name
         ]
       )
-    }
-  }
-
-  environment {
-    variables = {
       "TRE_ENVIRONMENT" = var.env
     }
   }
