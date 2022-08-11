@@ -22,7 +22,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
       "TRE_PROCESS_NAME" = join(
         ".",
         [
-          aws_sfn_state_machine.receive_and_process_bag.name,
+          local.step_function_name,
           aws_lambda_function.rapb_bagit_checksum_validation.function_name
         ]
       )
