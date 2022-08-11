@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-bagit-checksum-validation:${var.rapb_image_versions.tre_bagit_checksum_validation}"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-validate-bagit:${var.rapb_image_versions.tre_validate_bagit}"
   package_type  = "Image"
   function_name = local.lambda_name_bagit_validation
   role          = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
@@ -26,7 +26,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
 }
 
 resource "aws_lambda_function" "rapb_files_checksum_validation" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-files-checksum-validation:${var.rapb_image_versions.tre_files_checksum_validation}"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-validate-bagit-files:${var.rapb_image_versions.tre_validate_bagit_files}"
   package_type  = "Image"
   function_name = local.lambda_name_files_validation
   role          = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
