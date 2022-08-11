@@ -4,7 +4,7 @@ resource "aws_sfn_state_machine" "receive_and_process_bag" {
   definition = templatefile("${path.module}/templates/step-function-definition.json.tftpl", {
       arn_lambda_rapb_bagit_checksum_validation = aws_lambda_function.rapb_bagit_checksum_validation.arn
       arn_lambda_rapb_files_checksum_validation = aws_lambda_function.rapb_files_checksum_validation.arn
-      arn_sns_topic_receive_and_process_bag_out = aws_sns_topic.receive_and_process_bag_out.arn
+      arn_sns_topic_receive_and_process_bag_out = var.common_tre_internal_topic_arn
       url_tdr_sqs_retry = var.tdr_sqs_retry_url
       arn_sns_topic_tre_slack_alerts = var.common_tre_slack_alerts_topic_arn
   })
