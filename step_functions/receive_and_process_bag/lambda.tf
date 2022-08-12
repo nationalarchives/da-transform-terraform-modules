@@ -34,7 +34,15 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
+      "TRE_SYSTEM_NAME" = upper(var.prefix)
+      "TRE_PROCESS_NAME" = join(
+        ".",
+        [
+          local.step_function_name,
+          local.lambda_name_files_validation
+        ]
+      )
+      "TRE_ENVIRONMENT" = var.env
     }
   }
 
