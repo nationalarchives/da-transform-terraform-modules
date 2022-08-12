@@ -46,6 +46,7 @@ resource "aws_sns_topic_policy" "tre_internal" {
 
 resource "aws_sns_topic_subscription" "tre_internal_sqs" {
   for_each = var.tre_internal_sqs_subscribers
+  topic_arn = aws_sns_topic.tre_internal.arn
   protocol = "sqs"
   endpoint = each.value
 }
