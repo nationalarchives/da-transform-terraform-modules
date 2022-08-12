@@ -7,7 +7,7 @@ resource "aws_lambda_function" "bagit_to_dri_sip" {
 
   environment {
     variables = {
-      "S3-DRI-OUT-BUCKET" = aws_s3_bucket.dpsg_out.bucket
+      "S3_DRI_OUT_BUCKET" = aws_s3_bucket.dpsg_out.bucket
     }
   }
 }
@@ -16,7 +16,7 @@ resource "aws_lambda_function" "bagit_to_dri_sip" {
 
 resource "aws_lambda_function" "dpsg_trigger" {
   // IAMGE URI REPO TBC
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-rapb-trigger:${var.dpsg_image_versions.tre_rapb_trigger}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.dpsg_image_versions.tre_sqs_sf_trigger}"
   package_type = "Image"
   function_name = "${var.env}-${var.prefix}-dpsg-trigger"
   role = aws_iam_role.dpsg_trigger.arn

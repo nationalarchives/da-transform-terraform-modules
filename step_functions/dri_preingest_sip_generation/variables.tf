@@ -29,6 +29,6 @@ variable "dpsg_image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
     tre_bagit_to_dri_sip = string
-    tre_rapb_trigger = string
+    tre_sqs_sf_trigger = string
   })
 }

@@ -45,7 +45,7 @@ resource "aws_sns_topic_policy" "tre_internal" {
 }
 
 resource "aws_sns_topic_subscription" "tre_internal_sqs" {
-  for_each = var.tre_internal_sqs_ubscribers
+  for_each = var.tre_internal_sqs_subscribers
   protocol = "sqs"
   endpoint = each.value
 }

@@ -70,7 +70,7 @@ variable "tre_internal_subscribers" {
   type = list(string)  
 }
 
-variable "tre_internal_sqs_ubscribers" {
+variable "tre_internal_sqs_subscribers" {
   description = "ARN of the SQS Queues subscribed to tre-internal topic"
   type = list(string)
 }
