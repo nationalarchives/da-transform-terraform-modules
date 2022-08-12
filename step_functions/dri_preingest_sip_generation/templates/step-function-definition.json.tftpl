@@ -1,0 +1,61 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "BagIt To DRI SIP",
+  "States": {
+    "BagIt To DRI SIP": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${arn_lambda_dpsg_bagit_to_dri_sip}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "End": true,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "Next": "Format BagIt To DRI SIP Function Error"
+        }
+      ]
+    },
+    "Format BagIt To DRI SIP Function Error": {
+      "Type": "Pass",
+      "Next": "Slack Alert BagIt To DRI SIP Failed",
+      "Parameters": {
+        "ErrorMessage.$": "$.Cause"
+      }
+    },
+    "Slack Alert BagIt To DRI SIP Failed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.ErrorMessage",
+          "Event": "BagIt To DRI SIP"
+        }
+      },
+      "Next": "BagIt To DRI SIP Failed"
+    },
+    "BagIt To DRI SIP Failed": {
+      "Type": "Fail"
+    }
+  }
+}

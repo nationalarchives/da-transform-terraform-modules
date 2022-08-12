@@ -44,6 +44,12 @@ resource "aws_sns_topic_policy" "tre_internal" {
   policy = data.aws_iam_policy_document.tre_internal_topic_policy.json
 }
 
+resource "aws_sns_topic_subscription" "tre_internal_sqs" {
+  for_each = var.tre_internal_sqs_ubscribers
+  protocol = "sqs"
+  endpoint = each.value
+}
+
 
 # TRE Out SNS Topic
 

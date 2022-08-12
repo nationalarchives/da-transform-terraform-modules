@@ -70,6 +70,11 @@ variable "tre_internal_subscribers" {
   type = list(string)  
 }
 
+variable "tre_internal_sqs_ubscribers" {
+  description = "ARN of the SQS Queues subscribed to tre-internal topic"
+  type = list(string)
+}
+
 variable "tre_out_publishers" {
   description = "Roles that have permission to publish messages to tre-out topic"
   type = list(string)
