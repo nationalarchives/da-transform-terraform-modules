@@ -8,7 +8,7 @@ resource "aws_sqs_queue" "tre_dpsg_in" {
 }
 
 resource "aws_sqs_queue_policy" "tre_dpsg_in" {
-  queue_url = aws_sqs_queue.tre_dpsg_in.arn
+  queue_url = aws_sqs_queue.tre_dpsg_in.id
   policy = data.aws_iam_policy_document.tre_dpsg_in_queue.json
 }
 
