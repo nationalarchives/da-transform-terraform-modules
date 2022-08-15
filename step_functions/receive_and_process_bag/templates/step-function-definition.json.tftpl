@@ -103,7 +103,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.error-message"
+        "ErrorMessage.$": "$.parameters.TRE.errors"
       }
     },
     "TDR SQS Retry BagIt": {
@@ -114,7 +114,6 @@
         "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry BagIt",
-      "InputPath": "$.output-message",
       "ResultPath": null
     },
     "Slack Alert TDR Retry BagIt": {
@@ -126,7 +125,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.error-message",
+          "ErrorMessage.$": "$.parameters.TRE.errors",
           "Event": "TDR BagIt Error"
         }
       },
@@ -165,7 +164,12 @@
     "Format Files Checksum Function Error": {
       "Type": "Pass",
       "Next": "Slack Alert Files Checksum Validation Failed",
-      "Parameters": ""
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.Cause"
+      }
     },
     "Slack Alert Files Checksum Validation Failed": {
       "Type": "Task",
@@ -249,7 +253,6 @@
         "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry Files",
-      "InputPath": "$.output-message",
       "ResultPath": null
     },
     "Slack Alert TDR Retry Files": {
@@ -261,7 +264,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.error-message",
+          "ErrorMessage.$": "$.parameters.TRE.errors",
           "Event": "TDR Files Error"
         }
       },
@@ -274,7 +277,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.Cause"
+        "ErrorMessage.$": "$.parameters.TRE.errors"
       }
     },
     "Files Checksum Validation Failed": {
