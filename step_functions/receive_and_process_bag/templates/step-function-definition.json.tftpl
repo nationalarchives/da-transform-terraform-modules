@@ -1,12 +1,7 @@
 {
   "Comment": "TRE Receive And Process Bag Flow",
-  "StartAt": "Filter Input",
+  "StartAt": "BagIt Checksum Validation",
   "States": {
-    "Filter Input": {
-      "Type": "Pass",
-      "Next": "BagIt Checksum Validation",
-      "InputPath": "$.detail"
-    },
     "BagIt Checksum Validation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
@@ -71,30 +66,32 @@
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": true
+              "Variable": "$.parameters.TRE.errors[0]",
+              "IsPresent": true
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.TRE.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "TDR SQS Retry BagIt",
-          "Comment": "(error) and (retry < 3)"
+          "Comment": "(error) and (retry < 3)",
+          "Next": "TDR SQS Retry BagIt"
         },
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": false
+              "Not": {
+                "Variable": "$.parameters.TRE.errors[0]",
+                "IsPresent": true
+              }
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.TRE.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "Files Checksum Validation",
-          "Comment": "(not error) and (retry < 3)"
+          "Comment": "(not error) and (retry < 3)",
+          "Next": "Files Checksum Validation"
         }
       ],
       "Default": "Format BagIt Checksum Error"
@@ -191,30 +188,32 @@
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": false
+              "Not": {
+                "Variable": "$.parameters.TRE.errors[0]",
+                "IsPresent": true
+              }
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.TRE.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "Receive And Process Out Topic",
-          "Comment": "(not error) and (retry < 3)"
+          "Comment": "(not error) and (retry < 3)",
+          "Next": "Receive And Process Out Topic"
         },
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": true
+              "Variable": "$.parameters.TRE.errors[0]",
+              "IsPresent": true
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.TRE.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "TDR SQS Retry Files",
-          "Comment": "(error) and (retry < 3)"
+          "Comment": "(error) and (retry < 3)",
+          "Next": "TDR SQS Retry Files"
         }
       ],
       "Default": "Format Files Checksum Error"
