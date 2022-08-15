@@ -65,7 +65,7 @@ resource "aws_iam_role" "dri_preingest_sip_generation_lambda_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "dri_preingest_sip_lambda_logs" {
-  role = aws_iam_role.dri_preingest_sip_generation.arn
+  role = aws_iam_role.dri_preingest_sip_generation.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
 
@@ -76,6 +76,11 @@ resource "aws_iam_role" "dpsg_trigger" {
     name = "${var.env}-${var.prefix}-dpsg-trigger"
     policy = data.aws_iam_policy_document.dpsg_trigger.json
   }
+}
+
+resource "aws_iam_role_policy_attachment" "dpsg_sqs_lambda_trigger" {
+  role = aws_iam_role.dpsg_trigger.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 }
 
 # Lambda policy documents
