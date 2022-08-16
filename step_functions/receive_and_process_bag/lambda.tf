@@ -63,7 +63,9 @@ resource "aws_lambda_function" "rapb_trigger" {
 
   environment {
     variables = {
-      "RAPB_ARN" = aws_sfn_state_machine.receive_and_process_bag.arn
+      "TRE_STATE_MACHINE_ARN" = aws_sfn_state_machine.receive_and_process_bag.arn
+      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.TDR.reference"
+      "TRE_RETRY_KEY_PATH" = "parameters.TDR.number-of-retries"
     }
   }
 }
