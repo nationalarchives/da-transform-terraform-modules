@@ -55,7 +55,7 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
 # rapb_step_function_trigger
 
 resource "aws_lambda_function" "rapb_trigger" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.rapb_image_versions.tre_rapb_trigger}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-rapb-trigger:${var.rapb_image_versions.tre_rapb_trigger}"
   package_type = "Image"
   function_name = local.lambda_name_trigger
   role = aws_iam_role.rapb_trigger_lambda.arn
