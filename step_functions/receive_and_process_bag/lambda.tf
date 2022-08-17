@@ -8,7 +8,7 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
   environment {
     variables = {
       "TRE_SF_VERSION" = var.rapb_version
-      "TRE_LAMBDA_VERSIONS" = var.rapb_image_versions
+      "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
       "TRE_SYSTEM_NAME" = upper(var.prefix)
       "TRE_PROCESS_NAME" = join(
         ".",
@@ -36,7 +36,7 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
   environment {
     variables = {
       "TRE_SF_VERSION" = var.rapb_version
-      "TRE_LAMBDA_VERSIONS" = var.rapb_image_versions
+      "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
       "TRE_SYSTEM_NAME" = upper(var.prefix)
       "TRE_PROCESS_NAME" = join(
         ".",
