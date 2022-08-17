@@ -54,3 +54,6 @@ step_function/*.py
 dist/
 build/
 *.egg-info/
+
+# IDE config files
+/.vscode
