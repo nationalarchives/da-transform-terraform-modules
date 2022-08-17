@@ -226,6 +226,12 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
+        "MessageAttributes": {
+          "event_name": {
+            "DataType": "String",
+            "StringValue": "bagit-validated"
+          }
+        },
         "Message.$": "$",
         "TopicArn": "${arn_sns_topic_receive_and_process_bag_out}"
       },
