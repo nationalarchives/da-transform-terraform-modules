@@ -11,13 +11,9 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
       "TRE_SF_VERSION" = var.rapb_version
       "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
       "TRE_SYSTEM_NAME" = upper(var.prefix)
-      "TRE_PROCESS_NAME" = join(
-        ".",
-        [
-          local.step_function_name,
-          local.lambda_name_bagit_validation
-        ]
-      )
+      "TRE_PROCESS_NAME" = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_bagit_validation
       "TRE_ENVIRONMENT" = var.env
     }
   }
@@ -40,13 +36,9 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
       "TRE_SF_VERSION" = var.rapb_version
       "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
       "TRE_SYSTEM_NAME" = upper(var.prefix)
-      "TRE_PROCESS_NAME" = join(
-        ".",
-        [
-          local.step_function_name,
-          local.lambda_name_files_validation
-        ]
-      )
+      "TRE_PROCESS_NAME" = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_files_validation
       "TRE_ENVIRONMENT" = var.env
     }
   }
