@@ -1,13 +1,20 @@
 resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-bagit-checksum-validation:${var.rapb_image_versions.tre_bagit_checksum_validation}"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-validate-bagit:${var.rapb_image_versions.tre_validate_bagit}"
   package_type  = "Image"
-  function_name = "${var.env}-${var.prefix}-rapb-bagit-checksum-validation"
+  function_name = local.lambda_name_bagit_validation
   role          = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
   timeout       = 30
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
+      "TRE_S3_BUCKET" = var.tre_data_bucket
+      "TRE_SF_VERSION" = var.rapb_version
+      "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
+      "TRE_SYSTEM_NAME" = upper(var.prefix)
+      "TRE_PROCESS_NAME" = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_bagit_validation
+      "TRE_ENVIRONMENT" = var.env
     }
   }
 
@@ -17,15 +24,22 @@ resource "aws_lambda_function" "rapb_bagit_checksum_validation" {
 }
 
 resource "aws_lambda_function" "rapb_files_checksum_validation" {
-  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-files-checksum-validation:${var.rapb_image_versions.tre_files_checksum_validation}"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-validate-bagit-files:${var.rapb_image_versions.tre_validate_bagit_files}"
   package_type  = "Image"
-  function_name = "${var.env}-${var.prefix}-rapb-files-checksum-validation"
+  function_name = local.lambda_name_files_validation
   role          = aws_iam_role.receive_and_process_bag_lambda_invoke_role.arn
   timeout       = 30
 
   environment {
     variables = {
-      "S3_TEMPORARY_BUCKET" = var.tre_data_bucket
+      "TRE_S3_BUCKET" = var.tre_data_bucket
+      "TRE_SF_VERSION" = var.rapb_version
+      "TRE_LAMBDA_VERSIONS" = jsonencode(var.rapb_image_versions)
+      "TRE_SYSTEM_NAME" = upper(var.prefix)
+      "TRE_PROCESS_NAME" = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_files_validation
+      "TRE_ENVIRONMENT" = var.env
     }
   }
 
@@ -40,13 +54,15 @@ resource "aws_lambda_function" "rapb_files_checksum_validation" {
 resource "aws_lambda_function" "rapb_trigger" {
   image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-rapb-trigger:${var.rapb_image_versions.tre_rapb_trigger}"
   package_type = "Image"
-  function_name = "${var.env}-${var.prefix}-rapb-trigger"
+  function_name = local.lambda_name_trigger
   role = aws_iam_role.rapb_trigger_lambda.arn
   timeout = 30
 
   environment {
     variables = {
-      "RAPB_ARN" = aws_sfn_state_machine.receive_and_process_bag.arn
+      "TRE_STATE_MACHINE_ARN" = aws_sfn_state_machine.receive_and_process_bag.arn
+      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.consignment-export.reference"
+      "TRE_RETRY_KEY_PATH" = "parameters.consignment-export.number-of-retries"
     }
   }
 }

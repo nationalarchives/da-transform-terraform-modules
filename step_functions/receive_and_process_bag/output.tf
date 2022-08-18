@@ -13,11 +13,6 @@ output "receive_and_process_bag_arn" {
   description = "ARN of the receive and process bag step function"
 }
 
-output "receive_and_process_bag_out_sns_topic" {
-  value = aws_sns_topic.receive_and_process_bag_out.arn
-  description = "ARN of the receive and process bag out SNS Topic"
-}
-
 output "tre_rapb_in_queue_arn" {
   value = aws_sqs_queue.tre_rapb_in.arn
   description = "ARN of the tre-rapb-in SQS Queue"
