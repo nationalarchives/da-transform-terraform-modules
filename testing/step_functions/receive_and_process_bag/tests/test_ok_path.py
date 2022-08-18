@@ -66,7 +66,7 @@ def test_ok_path(
 
         logger.info(f'sns_publish_result={sns_publish_result}')
 
-    execution_detail_key_path='input.parameters.TDR.reference'
+    execution_detail_key_path='input.parameters.consignment-export.reference'
     step_function_executions = at_deployment.get_step_function_executions(
         step_function_name=step_function_name,
         from_date=start_dtm,
@@ -90,8 +90,12 @@ def test_ok_path(
     logger.info(f'step_result={step_result}')
 
     output = step_result['output']
-    parameters_tre = output['parameters']['TRE']
-    assert output['version'] == MESSAGE_VERSION, 'Invalid output.version'
+    assert 'version' in output, 'Missing version'
+    assert 'timestamp' in output, 'Missing timestamp'
+    assert 'UUIDs' in output, 'Missing UUIDs'
+    assert 'parameters' in output, 'Missing parameters'
+    
+    parameters_tre = output['parameters']['bagit-validated']
     assert len(parameters_tre['errors']) == 0, 'Error count > 0'
     assert parameters_tre['s3-bucket'] == s3_output_bucket, 'Invalid s3-bucket value'
     assert 's3-object-root' in parameters_tre, f's3-object-root key is missing'
