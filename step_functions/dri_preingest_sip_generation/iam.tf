@@ -59,16 +59,18 @@ data "aws_iam_policy_document" "dri_preingest_sip_generation_machine_policy" {
 
 # Lambda Roles
 
+# Role for the lambda functions in dri-preingest-sipgeneration step-function
 resource "aws_iam_role" "dri_preingest_sip_generation_lambda_role" {
   name = "${var.env}-${var.prefix}-dri-sip-ingest-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "dri_preingest_sip_lambda_logs" {
-  role = aws_iam_role.dri_preingest_sip_generation.name
+role = aws_iam_role.dri_preingest_sip_generation_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
 
+# Role for the dri-preingest-sipgeneration step-function trigger
 resource "aws_iam_role" "dpsg_trigger" {
   name = "${var.env}-${var.prefix}-dpsg-trigger-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
@@ -126,7 +128,11 @@ data "aws_iam_policy_document" "tre_dpsg_in_queue" {
 
 data "aws_iam_policy_document" "dpsg_out_bucket" {
   statement {
-    actions = [ "s3:PutObject" ]
+    actions = [
+      "s3:PutObject", 
+      "s3:GetObject", 
+      "s3:ListBucket", 
+    ]
 
     principals {
       type        = "AWS"

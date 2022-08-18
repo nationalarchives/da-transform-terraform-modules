@@ -109,7 +109,11 @@ resource "aws_iam_role_policy_attachment" "common_tre_slack_alerts_policy" {
 
 data "aws_iam_policy_document" "common_tre_data_bucket" {
   statement {
-    actions = ["s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
+    actions = [
+      "s3:PutObject", 
+      "s3:GetObject", 
+      "s3:ListBucket", 
+    ]
 
     principals {
       type        = "AWS"
