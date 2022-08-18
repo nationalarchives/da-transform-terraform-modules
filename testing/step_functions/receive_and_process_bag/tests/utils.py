@@ -28,11 +28,12 @@ def create_tdr_message(
         'producer': {
             'environment': environment,
             'name': 'TDR',
-            'process': 'consignment-export test payload',
+            'process': 'da-transform-terraform-modules/testing/step_functions/receive_and_process_bag',
+            'event-name': 'consignment-export',
             'type': consignment_type
         },
         'parameters': {
-            'TDR': {
+            'consignment-export': {
                 'resource': {
                     'resource-type': 'Object',
                     'access-type': 'url',
