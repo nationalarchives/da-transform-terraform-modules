@@ -66,11 +66,11 @@
         {
           "And": [
             {
-              "Variable": "$.parameters.TRE.errors[0]",
+              "Variable": "$.parameters.bagit-received.errors[0]",
               "IsPresent": true
             },
             {
-              "Variable": "$.parameters.TRE.number-of-retries",
+              "Variable": "$.parameters.bagit-received.number-of-retries",
               "NumericLessThan": 3
             }
           ],
@@ -81,12 +81,12 @@
           "And": [
             {
               "Not": {
-                "Variable": "$.parameters.TRE.errors[0]",
+                "Variable": "$.parameters.bagit-received.errors[0]",
                 "IsPresent": true
               }
             },
             {
-              "Variable": "$.parameters.TRE.number-of-retries",
+              "Variable": "$.parameters.bagit-received.number-of-retries",
               "NumericLessThan": 3
             }
           ],
@@ -103,7 +103,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.parameters.TRE.errors"
+        "ErrorMessage.$": "$.parameters.bagit-received.errors"
       }
     },
     "TDR SQS Retry BagIt": {
@@ -125,7 +125,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.parameters.TRE.errors",
+          "ErrorMessage.$": "$.parameters.bagit-received.errors",
           "Event": "TDR BagIt Error"
         }
       },
@@ -193,12 +193,12 @@
           "And": [
             {
               "Not": {
-                "Variable": "$.parameters.TRE.errors[0]",
+                "Variable": "$.parameters.bagit-validated.errors[0]",
                 "IsPresent": true
               }
             },
             {
-              "Variable": "$.parameters.TRE.number-of-retries",
+              "Variable": "$.parameters.bagit-validated.number-of-retries",
               "NumericLessThan": 3
             }
           ],
@@ -208,11 +208,11 @@
         {
           "And": [
             {
-              "Variable": "$.parameters.TRE.errors[0]",
+              "Variable": "$.parameters.bagit-validated.errors[0]",
               "IsPresent": true
             },
             {
-              "Variable": "$.parameters.TRE.number-of-retries",
+              "Variable": "$.parameters.bagit-validated.number-of-retries",
               "NumericLessThan": 3
             }
           ],
@@ -227,9 +227,25 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "MessageAttributes": {
+          "environment": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.environment"
+          },
+          "name": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.name"
+          },
+          "process": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.process"
+          },
+          "type": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.type"
+          },
           "event_name": {
             "DataType": "String",
-            "StringValue": "bagit-validated"
+            "StringValue.$": "$.producer.event_name"
           }
         },
         "Message.$": "$",
@@ -270,7 +286,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.parameters.TRE.errors",
+          "ErrorMessage.$": "$.parameters.bagit-validated.errors",
           "Event": "TDR Files Error"
         }
       },
@@ -283,7 +299,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.parameters.TRE.errors"
+        "ErrorMessage.$": "$.parameters.bagit-validated.errors"
       }
     },
     "Files Checksum Validation Failed": {
