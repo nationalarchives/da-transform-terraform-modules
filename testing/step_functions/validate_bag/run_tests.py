@@ -74,7 +74,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=(
-            'Run validate_bag step function tests.'
+            'Run validate_bagit step function tests.'
         ))
 
     parser.add_argument('--aws_profile_management', type=str,

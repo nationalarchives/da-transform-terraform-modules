@@ -1,15 +1,15 @@
 # Step Function Roles and Policies
 
-resource "aws_iam_role" "validate_bag" {
+resource "aws_iam_role" "validate_bagit" {
   name = "${local.step_function_name}-role"
-  assume_role_policy = data.aws_iam_policy_document.validate_bag_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.validate_bagit_assume_role_policy.json
   inline_policy {
     name = "${local.step_function_name}-policies"
-    policy = data.aws_iam_policy_document.validate_bag_machine_policies.json
+    policy = data.aws_iam_policy_document.validate_bagit_machine_policies.json
   }
 }
 
-data "aws_iam_policy_document" "validate_bag_assume_role_policy" {
+data "aws_iam_policy_document" "validate_bagit_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "validate_bag_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "validate_bag_machine_policies" {
+data "aws_iam_policy_document" "validate_bagit_machine_policies" {
   statement {
     actions = [
       "logs:CreateLogDelivery",
@@ -70,13 +70,13 @@ data "aws_iam_policy_document" "validate_bag_machine_policies" {
 
 # Lambda Roles
 
-resource "aws_iam_role" "validate_bag_lambda_invoke_role" {
+resource "aws_iam_role" "validate_bagit_lambda_invoke_role" {
   name               = "${local.step_function_name}-lambda-invoke-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "validate_bag_lambda_role_policy" {
-  role       = aws_iam_role.validate_bag_lambda_invoke_role.name
+resource "aws_iam_role_policy_attachment" "validate_bagit_lambda_role_policy" {
+  role       = aws_iam_role.validate_bagit_lambda_invoke_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSOpsWorksCloudWatchLogs"
 }
 
@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "vb_trigger" {
   statement {
     actions   = ["states:StartExecution"]
     effect    = "Allow"
-    resources = [ aws_sfn_state_machine.validate_bag.arn ]
+    resources = [ aws_sfn_state_machine.validate_bagit.arn ]
   }
 }
 
