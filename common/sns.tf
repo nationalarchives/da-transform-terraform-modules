@@ -45,12 +45,12 @@ resource "aws_sns_topic_policy" "tre_internal" {
 }
 
 resource "aws_sns_topic_subscription" "tre_internal_sqs" {
-  count = length(var.tre_internal_sqs_subscribers)
+  for_each = {for sub in var.tre_internal_subscriptions: sub.name => sub}
   topic_arn = aws_sns_topic.tre_internal.arn
-  protocol = "sqs"
-  endpoint = var.tre_internal_sqs_subscribers[count.index]
+  protocol = each.value.protocol
+  endpoint = each.value.endpoint
+  filter_policy = each.value.filter_policy
 }
-
 
 # TRE Out SNS Topic
 

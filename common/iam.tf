@@ -73,9 +73,12 @@ data "aws_iam_policy_document" "tre_internal_topic_policy" {
     sid = "TRE-InternalSubscribers"
     actions = [ "sns:Subscribe" ]
     effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = var.tre_internal_subscribers
+    dynamic "principals" {
+      for_each = {for x in var.tre_internal_subscriptions: x.endpoint => x}
+      content {
+        type = "AWS"
+        identifiers = [principals.value.endpoint]
+      }
     }
     resources = [ aws_sns_topic.tre_internal.arn ]
   }  
