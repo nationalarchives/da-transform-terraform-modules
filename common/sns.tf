@@ -29,7 +29,7 @@ resource "aws_sns_topic_policy" "tre_in" {
 resource "aws_sns_topic_subscription" "tre_in" {
   topic_arn = aws_sns_topic.tre_in.arn
   protocol = "sqs"
-  endpoint = "${var.tre_rapb_in_queue_arn}"
+  endpoint = "${var.tre_vb_in_queue_arn}"
 }
 
 # TRE Internal SNS Topic
@@ -44,6 +44,13 @@ resource "aws_sns_topic_policy" "tre_internal" {
   policy = data.aws_iam_policy_document.tre_internal_topic_policy.json
 }
 
+resource "aws_sns_topic_subscription" "tre_internal_sqs" {
+  for_each = {for sub in var.tre_internal_subscriptions: sub.name => sub}
+  topic_arn = aws_sns_topic.tre_internal.arn
+  protocol = each.value.protocol
+  endpoint = each.value.endpoint
+  filter_policy = each.value.filter_policy
+}
 
 # TRE Out SNS Topic
 

@@ -45,8 +45,8 @@ variable "slack_username" {
   type = string
 }
 
-variable "tre_rapb_in_queue_arn" {
-  description = "ARN of the tre-rapb-in SQS Queue"
+variable "tre_vb_in_queue_arn" {
+  description = "ARN of the tre-vb-in SQS Queue"
   type = string
 }
 
@@ -65,9 +65,16 @@ variable "tre_internal_publishers" {
   type = list(string)  
 }
 
-variable "tre_internal_subscribers" {
-  description = "Roles that have permission to subscribe to tre-internal topic"
-  type = list(string)  
+variable "tre_internal_subscriptions" {
+  description = "List tre-internal topic subscriptions"
+  type = list(object({
+    name = string
+    type = string
+    role_arn = string
+    endpoint = string
+    filter_policy = any
+    protocol = string
+  }))
 }
 
 variable "tre_out_publishers" {
