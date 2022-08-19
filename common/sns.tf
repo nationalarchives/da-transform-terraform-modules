@@ -29,7 +29,7 @@ resource "aws_sns_topic_policy" "tre_in" {
 resource "aws_sns_topic_subscription" "tre_in" {
   topic_arn = aws_sns_topic.tre_in.arn
   protocol = "sqs"
-  endpoint = "${var.tre_rapb_in_queue_arn}"
+  endpoint = "${var.tre_vb_in_queue_arn}"
 }
 
 # TRE Internal SNS Topic
