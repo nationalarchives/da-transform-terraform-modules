@@ -50,7 +50,7 @@ def test_ok_path(
             s3_bagit_url=s3_bagit_url,
             s3_sha_url=s3_sha_url)
 
-    step_function_name = f'{env}-tre-validate-bag'
+    step_function_name = f'{env}-tre-validate-bagit'
     start_dtm = datetime.now(tz=timezone.utc)
 
     if sns_input_topic is None:
