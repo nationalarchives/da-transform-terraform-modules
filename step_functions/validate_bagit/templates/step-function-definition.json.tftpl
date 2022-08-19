@@ -1,5 +1,5 @@
 {
-  "Comment": "TRE Receive And Process Bag Flow",
+  "Comment": "TRE Validate BagIt Flow",
   "StartAt": "BagIt Checksum Validation",
   "States": {
     "BagIt Checksum Validation": {
@@ -8,7 +8,7 @@
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "${arn_lambda_rapb_bagit_checksum_validation}"
+        "FunctionName": "${arn_lambda_vb_bagit_checksum_validation}"
       },
       "Retry": [
         {
@@ -137,7 +137,7 @@
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "${arn_lambda_rapb_files_checksum_validation}"
+        "FunctionName": "${arn_lambda_vb_files_checksum_validation}"
       },
       "Retry": [
         {
@@ -203,7 +203,7 @@
             }
           ],
           "Comment": "(not error) and (retry < 3)",
-          "Next": "Receive And Process Out Topic"
+          "Next": "SNS Publish"
         },
         {
           "And": [
@@ -222,7 +222,7 @@
       ],
       "Default": "Format Files Checksum Error"
     },
-    "Receive And Process Out Topic": {
+    "SNS Publish": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -249,7 +249,7 @@
           }
         },
         "Message.$": "$",
-        "TopicArn": "${arn_sns_topic_receive_and_process_bag_out}"
+        "TopicArn": "${arn_sns_topic_validate_bagit_out}"
       },
       "Next": "Slack Alert Completed Successfully"
     },
