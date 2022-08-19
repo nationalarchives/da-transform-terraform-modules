@@ -73,9 +73,12 @@ data "aws_iam_policy_document" "tre_internal_topic_policy" {
     sid = "TRE-InternalSubscribers"
     actions = [ "sns:Subscribe" ]
     effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = var.tre_internal_subscribers
+    dynamic "principals" {
+      for_each = {for x in var.tre_internal_subscriptions: x.name => x}
+      content {
+        type = principals.value.type
+        identifiers = [principals.value.role_arn]
+      }
     }
     resources = [ aws_sns_topic.tre_internal.arn ]
   }  
@@ -109,7 +112,11 @@ resource "aws_iam_role_policy_attachment" "common_tre_slack_alerts_policy" {
 
 data "aws_iam_policy_document" "common_tre_data_bucket" {
   statement {
-    actions = ["s3:PutObject", "s3:GetObject", "s3:ListBucket", ]
+    actions = [
+      "s3:PutObject", 
+      "s3:GetObject", 
+      "s3:ListBucket", 
+    ]
 
     principals {
       type        = "AWS"

@@ -30,7 +30,7 @@ cd testing/aws_test_lib
 
 ## 4. Run a test
 
-For example, for receive_and_process_bag tests, run the following in the
+For example, for validate_bagit tests, run the following in the
 project's root folder:
 
 ```
@@ -39,7 +39,7 @@ aws_profile_management='...'
 aws_profile_deployment='...'
 test_consignment_ref='...'
 
-python3 testing/step_functions/receive_and_process_bag/run_tests.py \
+python3 testing/step_functions/validate_bagit/run_tests.py \
   "--aws_profile_management=${aws_profile_management}" \
   "--aws_profile_deployment=${aws_profile_deployment}" \
   --environment_name=dev \

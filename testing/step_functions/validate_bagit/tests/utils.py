@@ -28,7 +28,7 @@ def create_tdr_message(
         'producer': {
             'environment': environment,
             'name': 'TDR',
-            'process': 'da-transform-terraform-modules/testing/step_functions/receive_and_process_bag',
+            'process': 'da-transform-terraform-modules/testing/step_functions/validate_bagit',
             'event-name': 'consignment-export',
             'type': consignment_type
         },
