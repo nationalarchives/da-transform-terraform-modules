@@ -65,14 +65,14 @@ variable "tre_internal_publishers" {
   type = list(string)  
 }
 
-variable "tre_internal_subscribers" {
-  description = "Roles that have permission to subscribe to tre-internal topic"
-  type = list(string)  
-}
-
-variable "tre_internal_sqs_subscribers" {
-  description = "ARN of the SQS Queues subscribed to tre-internal topic"
-  type = list(string)
+variable "tre_internal_subscriptions" {
+  description = "List tre-internal topic subscriptions"
+  type = list(object({
+    name = string
+    endpoint = string
+    filter_policy = any
+    protocol = string
+  }))
 }
 
 variable "tre_out_publishers" {
