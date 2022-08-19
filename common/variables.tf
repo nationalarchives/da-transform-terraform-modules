@@ -69,6 +69,8 @@ variable "tre_internal_subscriptions" {
   description = "List tre-internal topic subscriptions"
   type = list(object({
     name = string
+    type = string
+    role_arn = string
     endpoint = string
     filter_policy = any
     protocol = string

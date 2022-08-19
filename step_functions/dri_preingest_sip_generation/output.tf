@@ -13,3 +13,6 @@ output "dri_preingest_sip_generation_role_arn" {
   description = "ARN of the DRI Preingest SIP Generation Step Function Role"
 
 }
+output "lambda" {
+  value = aws_lambda_function.bagit_to_dri_sip.arn
+}

@@ -67,22 +67,20 @@ data "aws_iam_policy_document" "tre_internal_topic_policy" {
       type = "AWS"
       identifiers = var.tre_internal_publishers
     }
-
     resources = [ aws_sns_topic.tre_internal.arn ]
   }
-  
-  dynamic "statement" {
-    for_each = {for x in var.tre_internal_subscriptions: x.name => x}
-    content {
-      sid = "${statement.value.name}"
-      actions = [ "sns:Subscribe" ]
-      effect = "Allow"
-      principals {
-        type = "AWS"
-        identifiers = [statement.value.endpoint]
+  statement {
+    sid = "TRE-InternalSubscribers"
+    actions = [ "sns:Subscribe" ]
+    effect = "Allow"
+    dynamic "principals" {
+      for_each = {for x in var.tre_internal_subscriptions: x.name => x}
+      content {
+        type = principals.value.type
+        identifiers = [principals.value.role_arn]
       }
-      resources = [ aws_sns_topic.tre_internal.arn ]
     }
+    resources = [ aws_sns_topic.tre_internal.arn ]
   }  
 }
 
