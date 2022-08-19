@@ -1,19 +1,14 @@
 {
-  "Comment": "TRE Receive And Process Bag Flow",
-  "StartAt": "Filter Input",
+  "Comment": "TRE Validate BagIt Flow",
+  "StartAt": "BagIt Checksum Validation",
   "States": {
-    "Filter Input": {
-      "Type": "Pass",
-      "Next": "BagIt Checksum Validation",
-      "InputPath": "$.detail"
-    },
     "BagIt Checksum Validation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "${arn_lambda_rapb_bagit_checksum_validation}"
+        "FunctionName": "${arn_lambda_vb_bagit_checksum_validation}"
       },
       "Retry": [
         {
@@ -71,30 +66,32 @@
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": true
+              "Variable": "$.parameters.bagit-received.errors[0]",
+              "IsPresent": true
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.bagit-received.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "TDR SQS Retry BagIt",
-          "Comment": "(error) and (retry < 3)"
+          "Comment": "(error) and (retry < 3)",
+          "Next": "TDR SQS Retry BagIt"
         },
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": false
+              "Not": {
+                "Variable": "$.parameters.bagit-received.errors[0]",
+                "IsPresent": true
+              }
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.bagit-received.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "Files Checksum Validation",
-          "Comment": "(not error) and (retry < 3)"
+          "Comment": "(not error) and (retry < 3)",
+          "Next": "Files Checksum Validation"
         }
       ],
       "Default": "Format BagIt Checksum Error"
@@ -106,7 +103,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.error-message"
+        "ErrorMessage.$": "$.parameters.bagit-received.errors"
       }
     },
     "TDR SQS Retry BagIt": {
@@ -117,7 +114,6 @@
         "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry BagIt",
-      "InputPath": "$.output-message",
       "ResultPath": null
     },
     "Slack Alert TDR Retry BagIt": {
@@ -129,7 +125,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.error-message",
+          "ErrorMessage.$": "$.parameters.bagit-received.errors",
           "Event": "TDR BagIt Error"
         }
       },
@@ -141,7 +137,7 @@
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "${arn_lambda_rapb_files_checksum_validation}"
+        "FunctionName": "${arn_lambda_vb_files_checksum_validation}"
       },
       "Retry": [
         {
@@ -168,7 +164,12 @@
     "Format Files Checksum Function Error": {
       "Type": "Pass",
       "Next": "Slack Alert Files Checksum Validation Failed",
-      "Parameters": ""
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.Cause"
+      }
     },
     "Slack Alert Files Checksum Validation Failed": {
       "Type": "Task",
@@ -191,40 +192,64 @@
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": false
+              "Not": {
+                "Variable": "$.parameters.bagit-validated.errors[0]",
+                "IsPresent": true
+              }
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.bagit-validated.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "Receive And Process Out Topic",
-          "Comment": "(not error) and (retry < 3)"
+          "Comment": "(not error) and (retry < 3)",
+          "Next": "SNS Publish"
         },
         {
           "And": [
             {
-              "Variable": "$.error",
-              "BooleanEquals": true
+              "Variable": "$.parameters.bagit-validated.errors[0]",
+              "IsPresent": true
             },
             {
-              "Variable": "$.output-message.number-of-retries",
+              "Variable": "$.parameters.bagit-validated.number-of-retries",
               "NumericLessThan": 3
             }
           ],
-          "Next": "TDR SQS Retry Files",
-          "Comment": "(error) and (retry < 3)"
+          "Comment": "(error) and (retry < 3)",
+          "Next": "TDR SQS Retry Files"
         }
       ],
       "Default": "Format Files Checksum Error"
     },
-    "Receive And Process Out Topic": {
+    "SNS Publish": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
+        "MessageAttributes": {
+          "environment": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.environment"
+          },
+          "name": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.name"
+          },
+          "process": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.process"
+          },
+          "type": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.type"
+          },
+          "event-name": {
+            "DataType": "String",
+            "StringValue.$": "$.producer.event-name"
+          }
+        },
         "Message.$": "$",
-        "TopicArn": "${arn_sns_topic_receive_and_process_bag_out}"
+        "TopicArn": "${arn_sns_topic_validate_bagit_out}"
       },
       "Next": "Slack Alert Completed Successfully"
     },
@@ -250,7 +275,6 @@
         "QueueUrl": "${url_tdr_sqs_retry}"
       },
       "Next": "Slack Alert TDR Retry Files",
-      "InputPath": "$.output-message",
       "ResultPath": null
     },
     "Slack Alert TDR Retry Files": {
@@ -262,7 +286,7 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.error-message",
+          "ErrorMessage.$": "$.parameters.bagit-validated.errors",
           "Event": "TDR Files Error"
         }
       },
@@ -275,7 +299,7 @@
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
         "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.Cause"
+        "ErrorMessage.$": "$.parameters.bagit-validated.errors"
       }
     },
     "Files Checksum Validation Failed": {

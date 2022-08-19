@@ -24,26 +24,47 @@ def main(
         f'environment_name={environment_name}'
         f'test_consignment_ref={test_consignment_ref}')
 
-    at_managament = AWSTester(aws_profile=aws_profile_management)
+    at_management = AWSTester(aws_profile=aws_profile_management)
     at_deployment = AWSTester(aws_profile=aws_profile_deployment)
+    s3_test_data_bucket = 'dev-te-testdata'  # management account
+    tre_in_topic = f'{environment_name}-tre-in'  # deployment account
+    s3_output_bucket=f'{environment_name}-tre-common-data'  # deployment account
 
     logger.info('*** testing judgment *********' + ('*' * 50))
+    consignment_type='judgment'
+
     test_ok_path(
-        at_management=at_managament,
+        at_management=at_management,
         at_deployment=at_deployment,
         env=environment_name,
-        consignment_type='judgment',
-        consignment_ref=test_consignment_ref
+        s3_test_data_bucket=s3_test_data_bucket,
+        s3_output_bucket=s3_output_bucket,
+        consignment_type=consignment_type,
+        consignment_ref=test_consignment_ref,
+        sns_input_topic=tre_in_topic
     )
 
+    logger.info(f'To see output, run: aws --profile {aws_profile_deployment} '
+            f's3 ls {s3_output_bucket}/consignments/{consignment_type}'
+            f'/{test_consignment_ref}/0/{test_consignment_ref}/')
+
     logger.info('*** testing standard *********' + ('*' * 50))
+    consignment_type='standard'
+
     test_ok_path(
-        at_management=at_managament,
+        at_management=at_management,
         at_deployment=at_deployment,
         env=environment_name,
-        consignment_type='standard',
-        consignment_ref=test_consignment_ref
+        s3_test_data_bucket=s3_test_data_bucket,
+        s3_output_bucket=s3_output_bucket,
+        consignment_type=consignment_type,
+        consignment_ref=test_consignment_ref,
+        sns_input_topic=tre_in_topic
     )
+
+    logger.info(f'To see output, run: aws --profile {aws_profile_deployment} '
+            f's3 ls {s3_output_bucket}/consignments/{consignment_type}'
+            f'/{test_consignment_ref}/0/{test_consignment_ref}/')
 
     logger.info('###########################################################')
     logger.info('#                 All tests completed OK                  #')
@@ -53,7 +74,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=(
-            'Run receive_and_process_bag step function tests.'
+            'Run validate_bagit step function tests.'
         ))
 
     parser.add_argument('--aws_profile_management', type=str,

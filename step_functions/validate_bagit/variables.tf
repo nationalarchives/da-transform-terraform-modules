@@ -19,18 +19,18 @@ variable "tre_data_bucket" {
   type = string
 }
 
-variable "rapb_version" {
-  description = "Receive And Process Bag Step Function version (update if Step Function flow or called Lambda function versions change)"
+variable "vb_version" {
+  description = "Validate BagIt Step Function version (update if Step Function flow or called Lambda function versions change)"
   type = string
   
 }
 
-variable "rapb_image_versions" {
+variable "vb_image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
-    tre_bagit_checksum_validation = string
-    tre_files_checksum_validation = string
-    tre_rapb_trigger = string
+    tre_vb_trigger = string
+    tre_vb_validate_bagit = string
+    tre_vb_validate_bagit_files = string
   })
 }
 
@@ -46,5 +46,10 @@ variable "tdr_sqs_retry_url" {
 
 variable "tdr_sqs_retry_arn" {
   description = "The TDR retry SQS Queue ARN"
+  type = string
+}
+
+variable "common_tre_internal_topic_arn" {
+  description = "The TRE internal SNS topic ARN"
   type = string
 }
