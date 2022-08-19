@@ -132,17 +132,3 @@ data "aws_iam_policy_document" "tre_rapb_queue_in" {
     ]
   }
 }
-
-# SNS Policies 
-
-data "aws_iam_policy_document" "receive_and_process_bag_out_topic_policy" {
-  statement {
-    actions = [ "sns:Publish" ]
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [ aws_sfn_state_machine.receive_and_process_bag.role_arn ]
-    }
-    resources = [ aws_sns_topic.receive_and_process_bag_out.arn ]
-  }
-}

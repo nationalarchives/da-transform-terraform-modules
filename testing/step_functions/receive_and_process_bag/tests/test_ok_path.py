@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
 import logging
 from aws_test_lib.aws_tester import AWSTester
 from datetime import datetime, timezone
 import json
+from . import utils
+
+MESSAGE_VERSION = '1.0.0'
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,15 +19,15 @@ def test_ok_path(
         at_management: AWSTester,
         at_deployment: AWSTester,
         env: str,
+        s3_test_data_bucket: str,
+        s3_output_bucket: str,
         consignment_type: str,
-        consignment_ref: str
+        consignment_ref: str,
+        sns_input_topic: str=None  # run step function directly if set to None
 ):
     logger.info(f'test_ok_path start: env={env} '
         f'consignment_ref={consignment_ref} '
         f'consignment_type={consignment_type}')
-
-    s3_test_data_bucket = 'dev-te-testdata'  # management account
-    s3_output_bucket = f'{env}-tre-common-data'  # deployment account
 
     # Remove any data from prior run of the consignment ref
     s3_delete_prefix = f'consignments/{consignment_type}/{consignment_ref}/'
@@ -39,36 +43,30 @@ def test_ok_path(
             bucket=s3_test_data_bucket,
             key=f'consignments/{consignment_type}/{consignment_ref}.tar.gz.sha256')
 
-    input_dict = {
-        'consignment-reference': consignment_ref,
-        'consignment-type': consignment_type,
-        's3-bagit-url': s3_bagit_url,
-        's3-sha-url': s3_sha_url,
-        'number-of-retries': 0
-    }
+    input_dict = utils.create_tdr_message(
+            environment=env, 
+            consignment_type=consignment_type,
+            consignment_ref=consignment_ref,
+            s3_bagit_url=s3_bagit_url,
+            s3_sha_url=s3_sha_url)
 
     step_function_name = f'{env}-tre-receive-and-process-bag'
     start_dtm = datetime.now(tz=timezone.utc)
 
-    # Use detail field to simplify possible future adoption of Event Bridge message format
-    sf_input = {
-        'detail': input_dict
-    }
+    if sns_input_topic is None:
+        run_step_function_result = at_deployment.run_step_function(
+            name=step_function_name,
+            input=json.dumps(input_dict))
 
-    at_deployment.run_step_function(
-        name=step_function_name,
-        input=json.dumps(sf_input))
+        logger.info(f'run_step_function_result={run_step_function_result}')
+    else:
+        sns_publish_result = at_deployment.sns_publish(
+            topic_name=sns_input_topic,
+            message=json.dumps(input_dict))
 
-#     submission_result = at_deployment.put_event_bridge_event(
-#             event_bus_name='',
-#             detail_type='TDR Consignment',
-#             source='uk.gov.nationalarchives.test',
-#             payload=input_dict
-#     )
+        logger.info(f'sns_publish_result={sns_publish_result}')
 
-#     logger.info(f'submission_result={submission_result}')
-
-    execution_detail_key_path='input.detail.consignment-reference'
+    execution_detail_key_path='input.parameters.consignment-export.reference'
     step_function_executions = at_deployment.get_step_function_executions(
         step_function_name=step_function_name,
         from_date=start_dtm,
@@ -90,14 +88,24 @@ def test_ok_path(
 
     logger.info(f'type(step_result)={type(step_result)}')
     logger.info(f'step_result={step_result}')
-    assert not step_result['input']['error'], 'Expected input error to be False but it was not'
-    assert not step_result['output']['error'], 'Expected output error to be False but it was not'
+
+    output = step_result['output']
+    assert 'version' in output, 'Missing version'
+    assert 'timestamp' in output, 'Missing timestamp'
+    assert 'UUIDs' in output, 'Missing UUIDs'
+    assert 'parameters' in output, 'Missing parameters'
     
-    result_value = step_result['output']['s3-bucket']
-    assert result_value == s3_output_bucket, f's3-bucket is "{result_value}" not "{s3_output_bucket}"'
+    parameters_tre = output['parameters']['bagit-validated']
+    assert len(parameters_tre['errors']) == 0, 'Error count > 0'
+    assert parameters_tre['s3-bucket'] == s3_output_bucket, 'Invalid s3-bucket value'
+    assert 's3-object-root' in parameters_tre, f's3-object-root key is missing'
+    assert 's3-bagit-name' in parameters_tre, f's3-bagit-name key is missing'
+
+    sns_step_result = at_deployment.get_step_function_step_result(
+          arn=step_function_executions[0]['executionArn'],
+          step_name='Receive And Process Out Topic')
     
-    assert 's3-object-root' in step_result['output'], f's3-object-root key is missing'
-    assert 's3-bagit-name' in step_result['output'], f's3-bagit-name key is missing'
+    logger.info(f'sns_step_result={sns_step_result}')
 
     end_step_result = at_deployment.get_step_function_step_result(
           arn=step_function_executions[0]['executionArn'],
