@@ -39,6 +39,7 @@ class AWSTester():
         self.aws_session = boto3.Session(profile_name=aws_profile)                 
         self.aws_client_s3 = self.aws_session.client('s3')
         self.aws_resource_s3 = self.aws_session.resource('s3')
+        self.aws_client_sns = self.aws_session.client('sns')
         self.aws_client_sqs = self.aws_session.client('sqs')
         self.aws_client_sf = self.aws_session.client('stepfunctions')
         self.aws_client_eb = self.aws_session.client('events')  # EventBridge
@@ -68,6 +69,44 @@ class AWSTester():
             raise ValueError(result)
 
         return result
+
+
+    def sns_get_topic_arn(
+        self,
+        topic_name: str
+    ) -> str:
+        KEY_TOPIC_ARN = 'TopicArn'
+        logger.info(f'sns_get_topic_arn: topic_name={topic_name}')
+        topic_list = self.aws_client_sns.list_topics()
+        logger.info(f'topics={topic_list}')
+        filtered_list = [
+            t for t in topic_list['Topics']
+            if str(t[KEY_TOPIC_ARN]).endswith(topic_name)
+        ]
+
+        logger.info(f'filtered_list={filtered_list}')
+        topic_count = len(filtered_list)
+        if topic_count != 1:
+            raise ValueError(f'Expected 1 SNS topic "{topic_name}" but found {topic_count}')
+        return filtered_list[0][KEY_TOPIC_ARN]
+
+
+    def sns_publish(
+        self,
+        topic_name: str,
+        message: str,
+        attributes: dict={}
+    ) -> str:
+        logger.info(f'sns_publish: topic_name={topic_name} message={message} attributes={attributes}')
+        sns_topic_arn = self.sns_get_topic_arn(topic_name=topic_name)
+        logger.info(f'sns_topic_arn={sns_topic_arn}')
+        publish_response = self.aws_client_sns.publish(
+            TopicArn=sns_topic_arn,
+            Message=message,
+            MessageAttributes=attributes
+        )
+        
+        return publish_response
 
 
     def send_sqs_message(
@@ -112,12 +151,12 @@ class AWSTester():
             expiry_seconds: int=60
     ) -> str:
         logger.info(f'get_presigned_url: bucket={bucket} key={key} expiry_seconds={expiry_seconds}')
-        presiged_url = self.aws_client_s3.generate_presigned_url(
+        presigned_url = self.aws_client_s3.generate_presigned_url(
             'get_object',
             Params={'Bucket': bucket, 'Key': key},
             ExpiresIn=expiry_seconds)
-        logger.info(f'presiged_url={presiged_url}')
-        return presiged_url
+        logger.info(f'presigned_url={presigned_url}')
+        return presigned_url
 
 
     def run_step_function(
