@@ -19,18 +19,18 @@ variable "tre_data_bucket" {
   type = string
 }
 
-variable "rapb_version" {
-  description = "Receive And Process Bag Step Function version (update if Step Function flow or called Lambda function versions change)"
+variable "vb_version" {
+  description = "Validate BagIt Step Function version (update if Step Function flow or called Lambda function versions change)"
   type = string
   
 }
 
-variable "rapb_image_versions" {
+variable "vb_image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
-    tre_rapb_trigger = string
-    tre_validate_bagit = string
-    tre_validate_bagit_files = string
+    tre_vb_trigger = string
+    tre_vb_validate_bagit = string
+    tre_vb_validate_bagit_files = string
   })
 }
 

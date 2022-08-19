@@ -50,7 +50,7 @@ def test_ok_path(
             s3_bagit_url=s3_bagit_url,
             s3_sha_url=s3_sha_url)
 
-    step_function_name = f'{env}-tre-receive-and-process-bag'
+    step_function_name = f'{env}-tre-validate-bagit'
     start_dtm = datetime.now(tz=timezone.utc)
 
     if sns_input_topic is None:
@@ -103,7 +103,7 @@ def test_ok_path(
 
     sns_step_result = at_deployment.get_step_function_step_result(
           arn=step_function_executions[0]['executionArn'],
-          step_name='Receive And Process Out Topic')
+          step_name='SNS Publish')
     
     logger.info(f'sns_step_result={sns_step_result}')
 
