@@ -20,7 +20,7 @@ variable "tre_data_bucket" {
 }
 
 variable "vb_version" {
-  description = "Validate Bag Step Function version (update if Step Function flow or called Lambda function versions change)"
+  description = "Validate BagIt Step Function version (update if Step Function flow or called Lambda function versions change)"
   type = string
   
 }
