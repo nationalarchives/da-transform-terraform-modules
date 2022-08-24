@@ -8,6 +8,7 @@ resource "aws_lambda_function" "bagit_to_dri_sip" {
   environment {
     variables = {
       "S3_DRI_OUT_BUCKET" = aws_s3_bucket.dpsg_out.bucket
+      "TRE_PRESIGNED_URL_EXPIRY" = 60
     }
   }
 }
@@ -25,8 +26,8 @@ resource "aws_lambda_function" "dpsg_trigger" {
   environment {
     variables = {
       "TRE_STATE_MACHINE_ARN" = aws_sfn_state_machine.dri_preingest_sip_generation.arn
-      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.TRE.reference"
-      "TRE_RETRY_KEY_PATH" = "parameters.TRE.number-of-retries"
+      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.bagit-validated.reference"
+      "TRE_RETRY_KEY_PATH" = "parameters.bagit-validated.number-of-retries"
     }
   }
 }
