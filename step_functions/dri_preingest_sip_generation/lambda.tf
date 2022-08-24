@@ -8,6 +8,7 @@ resource "aws_lambda_function" "bagit_to_dri_sip" {
   environment {
     variables = {
       "S3_DRI_OUT_BUCKET" = aws_s3_bucket.dpsg_out.bucket
+      "TRE_PRESIGNED_URL_EXPIRY" = 60
     }
   }
 }
