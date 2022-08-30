@@ -76,3 +76,4 @@ variable "slack_username" {
   description = "Username for tre slack alerts"
   type = string
 }
+
