@@ -22,7 +22,7 @@
           "BackoffRate": 2
         }
       ],
-      "End": true,
+      "Next": "Bagit-dri-sip-error?",
       "Catch": [
         {
           "ErrorEquals": [
@@ -32,12 +32,55 @@
         }
       ]
     },
+    "Bagit-dri-sip-error?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Not": {
+            "Variable": "$.error",
+            "BooleanEquals": true
+          },
+          "Next": "DRI SNS Publish"
+        }
+      ],
+      "Default": "Bagit-dri-sip-error"
+    },
+    "Bagit-dri-sip-error": {
+      "Type": "Pass",
+      "Next": "Slack Alert BagIt To DRI SIP Failed",
+      "Parameters": {
+        "ErrorMessage.$": "$.error-message"
+      }
+    },
     "Format BagIt To DRI SIP Function Error": {
       "Type": "Pass",
       "Next": "Slack Alert BagIt To DRI SIP Failed",
       "Parameters": {
         "ErrorMessage.$": "$.Cause"
       }
+    },
+    "DRI SNS Publish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "${arn_sns_topic_dpsq_out}"
+      },
+      "Next": "Slack Alert BagIt To DRI SIP Success"
+    },
+    "Slack Alert BagIt To DRI SIP Success": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "success",
+          "Event": "DRI Message Sent"
+        }
+      },
+      "End": true
     },
     "Slack Alert BagIt To DRI SIP Failed": {
       "Type": "Task",
