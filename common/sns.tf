@@ -56,7 +56,7 @@ resource "aws_sns_topic_subscription" "tre_internal_sqs" {
 
 resource "aws_sns_topic" "tre_out" {
   name = "${var.env}-${var.prefix}-out"
-  kms_master_key_id = "alais/aws/sns"
+  kms_master_key_id = "alias/aws/sns"
 }
 
 resource "aws_sns_topic_policy" "tre_out" {

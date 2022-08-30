@@ -32,3 +32,8 @@ variable "dpsg_image_versions" {
     tre_sqs_sf_trigger = string
   })
 }
+
+variable "common_tre_out_topic_arn" {
+  description = "The TRE out SNS topic ARN"
+  type = string
+}
