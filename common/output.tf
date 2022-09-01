@@ -12,3 +12,8 @@ output "common_tre_internal_topic_arn" {
   value = aws_sns_topic.tre_internal.arn
   description = "Common TRE internal topic arn"
 }
+
+output "common_tre_out_topic_arn" {
+  value = aws_sns_topic.tre_out.arn
+  description = "Common TRE out topic arn"
+}
