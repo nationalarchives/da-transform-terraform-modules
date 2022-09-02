@@ -34,6 +34,11 @@ resource "aws_lambda_function" "tre_forward" {
   function_name = "${var.env}-${var.prefix}-forward"
   role          = aws_iam_role.tre_forward_lambda_role.arn
   timeout       = 30
+  environment {
+    variables = {
+      "TRE_OUT_TOPIC_ARN" = aws_sqs_queue.tre_forward.arn
+    }
+  }
   tracing_config {
     mode = "Active"
   }
