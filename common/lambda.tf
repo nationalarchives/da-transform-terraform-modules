@@ -36,7 +36,7 @@ resource "aws_lambda_function" "tre_forward" {
   timeout       = 30
   environment {
     variables = {
-      "TRE_OUT_TOPIC_ARN" = aws_sqs_queue.tre_forward.arn
+      "TRE_OUT_TOPIC_ARN" = aws_sns_topic.tre_out.arn
     }
   }
   tracing_config {
