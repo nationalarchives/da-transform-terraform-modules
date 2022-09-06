@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "common_tre_data_bucket" {
 
 # SQS Policy
 
-data "aws_iam_policy_document" "tre_forward_quque" {
+data "aws_iam_policy_document" "tre_forward_queue" {
   statement {
     actions = ["sqs:SendMessage"]
     effect  = "Allow"

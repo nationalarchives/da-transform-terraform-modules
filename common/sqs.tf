@@ -9,7 +9,7 @@ resource "aws_sqs_queue" "tre_forward" {
 
 resource "aws_sqs_queue_policy" "tre_forward" {
   queue_url = aws_sqs_queue.tre_forward.id
-  policy    = data.aws_iam_policy_document.tre_forward_quque.json
+  policy    = data.aws_iam_policy_document.tre_forward_queue.json
 }
 
 resource "aws_sqs_queue" "tre_forward_deadletter" {
