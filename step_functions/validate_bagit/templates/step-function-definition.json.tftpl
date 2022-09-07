@@ -28,19 +28,9 @@
           "ErrorEquals": [
             "States.TaskFailed"
           ],
-          "Next": "Format BagIt Error Info"
+          "Next": "BagIt Error -> Slack"
         }
       ]
-    },
-    "Format BagIt Error Info": {
-      "Type": "Pass",
-      "Next": "BagIt Error -> Slack",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.Cause"
-      }
     },
     "BagIt Error -> Slack": {
       "Type": "Task",
@@ -94,17 +84,7 @@
           "Comment": "bagit-validation-error"
         }
       ],
-      "Default": "Format BagIt Unhandled Event Info"
-    },
-    "Format BagIt Unhandled Event Info": {
-      "Type": "Pass",
-      "Next": "BagIt Unhandled Event -> Slack",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.parameters.bagit-received.errors"
-      }
+      "Default": "BagIt Unhandled Event -> Slack"
     },
     "Files Checksum Validation": {
       "Type": "Task",
@@ -132,19 +112,9 @@
           "ErrorEquals": [
             "States.TaskFailed"
           ],
-          "Next": "Format Files Checksum Function Error"
+          "Next": "Files Lambda Error -> Slack"
         }
       ]
-    },
-    "Format Files Checksum Function Error": {
-      "Type": "Pass",
-      "Next": "Files Lambda Error -> Slack",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.Cause"
-      }
     },
     "Files Lambda Error -> Slack": {
       "Type": "Task",
