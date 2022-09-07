@@ -60,8 +60,7 @@ resource "aws_lambda_function" "vb_trigger" {
   environment {
     variables = {
       "TRE_STATE_MACHINE_ARN" = aws_sfn_state_machine.validate_bagit.arn
-      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.consignment-export.reference"
-      "TRE_RETRY_KEY_PATH" = "parameters.consignment-export.number-of-retries"
+      "TRE_CONSIGNMENT_KEY_PATH" = "parameters.bagit-available.reference"
     }
   }
 }
