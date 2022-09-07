@@ -28,13 +28,13 @@
           "ErrorEquals": [
             "States.TaskFailed"
           ],
-          "Next": "Format BagIt Checksum Function Error"
+          "Next": "Format BagIt Error Info"
         }
       ]
     },
-    "Format BagIt Checksum Function Error": {
+    "Format BagIt Error Info": {
       "Type": "Pass",
-      "Next": "Slack Alert BagIt Checksum Validation Failed",
+      "Next": "BagIt Error -> Slack",
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
@@ -42,7 +42,7 @@
         "ErrorMessage.$": "$.Cause"
       }
     },
-    "Slack Alert BagIt Checksum Validation Failed": {
+    "BagIt Error -> Slack": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -51,72 +51,16 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "error",
-          "ErrorMessage.$": "$.ErrorMessage",
-          "Event": "BagIt Checksum Error"
+          "ErrorMessage.$": "$.Cause",
+          "Event": "Lambda Error (BagIt)"
         }
       },
-      "Next": "BagIt Checksum Validation Failed"
+      "Next": "BagIt Error"
     },
-    "BagIt Checksum Validation Failed": {
+    "BagIt Error": {
       "Type": "Fail"
     },
-    "BagIt Checksum Validation Output Handler": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "And": [
-            {
-              "Variable": "$.parameters.bagit-received.errors[0]",
-              "IsPresent": true
-            },
-            {
-              "Variable": "$.parameters.bagit-received.number-of-retries",
-              "NumericLessThan": 3
-            }
-          ],
-          "Comment": "(error) and (retry < 3)",
-          "Next": "TDR SQS Retry BagIt"
-        },
-        {
-          "And": [
-            {
-              "Not": {
-                "Variable": "$.parameters.bagit-received.errors[0]",
-                "IsPresent": true
-              }
-            },
-            {
-              "Variable": "$.parameters.bagit-received.number-of-retries",
-              "NumericLessThan": 3
-            }
-          ],
-          "Comment": "(not error) and (retry < 3)",
-          "Next": "Files Checksum Validation"
-        }
-      ],
-      "Default": "Format BagIt Checksum Error"
-    },
-    "Format BagIt Checksum Error": {
-      "Type": "Pass",
-      "Next": "Slack Alert BagIt Checksum Validation Failed",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.parameters.bagit-received.errors"
-      }
-    },
-    "TDR SQS Retry BagIt": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sqs:sendMessage",
-      "Parameters": {
-        "MessageBody.$": "$",
-        "QueueUrl": "${url_tdr_sqs_retry}"
-      },
-      "Next": "Slack Alert TDR Retry BagIt",
-      "ResultPath": null
-    },
-    "Slack Alert TDR Retry BagIt": {
+    "BagIt Unhandled Event -> Slack": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -124,12 +68,43 @@
         "Message": {
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
-          "Status": "warning",
-          "ErrorMessage.$": "$.parameters.bagit-received.errors",
-          "Event": "TDR BagIt Error"
+          "Status": "error",
+          "ErrorMessage.$": "$.producer.event-name",
+          "Event": "Invalid event-name (BagIt)"
         }
       },
-      "End": true
+      "Next": "BagIt Checksum Unhandled Event"
+    },
+    "BagIt Checksum Unhandled Event": {
+      "Type": "Fail"
+    },
+    "BagIt Checksum Validation Output Handler": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.producer.event-name",
+          "StringEquals": "bagit-received",
+          "Next": "Files Checksum Validation",
+          "Comment": "bagit-received"
+        },
+        {
+          "Variable": "$.producer.event-name ",
+          "StringEquals": "bagit-validation-error",
+          "Next": "SNS tre-internal",
+          "Comment": "bagit-validation-error"
+        }
+      ],
+      "Default": "Format BagIt Unhandled Event Info"
+    },
+    "Format BagIt Unhandled Event Info": {
+      "Type": "Pass",
+      "Next": "BagIt Unhandled Event -> Slack",
+      "Parameters": {
+        "Execution.$": "$$.Execution.Name",
+        "StateMachine.$": "$$.StateMachine.Name",
+        "ErrorType.$": "$$.State.Name",
+        "ErrorMessage.$": "$.parameters.bagit-received.errors"
+      }
     },
     "Files Checksum Validation": {
       "Type": "Task",
@@ -163,7 +138,7 @@
     },
     "Format Files Checksum Function Error": {
       "Type": "Pass",
-      "Next": "Slack Alert Files Checksum Validation Failed",
+      "Next": "Files Lambda Error -> Slack",
       "Parameters": {
         "Execution.$": "$$.Execution.Name",
         "StateMachine.$": "$$.StateMachine.Name",
@@ -171,7 +146,7 @@
         "ErrorMessage.$": "$.Cause"
       }
     },
-    "Slack Alert Files Checksum Validation Failed": {
+    "Files Lambda Error -> Slack": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -180,8 +155,8 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "error",
-          "ErrorMessage.$": "$.ErrorMessage",
-          "Event": "File Checksum Error"
+          "ErrorMessage.$": "$.Cause",
+          "Event": "Lambda Error (Files)"
         }
       },
       "Next": "Files Checksum Validation Failed"
@@ -190,39 +165,41 @@
       "Type": "Choice",
       "Choices": [
         {
-          "And": [
+          "Or": [
             {
-              "Not": {
-                "Variable": "$.parameters.bagit-validated.errors[0]",
-                "IsPresent": true
-              }
+              "Variable": "$.producer.event-name",
+              "StringEquals": "bagit-validated"
             },
             {
-              "Variable": "$.parameters.bagit-validated.number-of-retries",
-              "NumericLessThan": 3
+              "Variable": "$.producer.event-name",
+              "StringEquals": "bagit-validation-error"
             }
           ],
-          "Comment": "(not error) and (retry < 3)",
-          "Next": "SNS Publish"
-        },
-        {
-          "And": [
-            {
-              "Variable": "$.parameters.bagit-validated.errors[0]",
-              "IsPresent": true
-            },
-            {
-              "Variable": "$.parameters.bagit-validated.number-of-retries",
-              "NumericLessThan": 3
-            }
-          ],
-          "Comment": "(error) and (retry < 3)",
-          "Next": "TDR SQS Retry Files"
+          "Comment": "bagit-validated or bagit-validation-error",
+          "Next": "SNS tre-internal"
         }
       ],
-      "Default": "Format Files Checksum Error"
+      "Default": "Files Unhandled Event -> Slack"
     },
-    "SNS Publish": {
+    "Files Unhandled Event -> Slack": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.producer.event-name",
+          "Event": "Invalid event-name (Files)"
+        }
+      },
+      "Next": "Files Checksum Unhandled Event"
+    },
+    "Files Checksum Unhandled Event": {
+      "Type": "Fail"
+    },
+    "SNS tre-internal": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -251,9 +228,43 @@
         "Message.$": "$",
         "TopicArn": "${arn_sns_topic_validate_bagit_out}"
       },
-      "Next": "Slack Alert Completed Successfully"
+      "Next": "Choice",
+      "ResultPath": null
     },
-    "Slack Alert Completed Successfully": {
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.producer.event-name",
+          "StringEquals": "bagit-validated",
+          "Next": "bagit-validated -> Slack",
+          "Comment": "bagit-validated"
+        },
+        {
+          "Variable": "$.producer.event-name",
+          "StringEquals": "bagit-validation-error",
+          "Next": "bagit-validation-error -> Slack",
+          "Comment": "bagit-validation-error"
+        }
+      ],
+      "Default": "Unhandled Event -> Slack"
+    },
+    "Unhandled Event -> Slack": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
+        "Message": {
+          "Execution.$": "$$.Execution.Name",
+          "StateMachine.$": "$$.StateMachine.Name",
+          "Status": "error",
+          "ErrorMessage.$": "$.producer.event-name",
+          "Event": "Invalid event-name (SNS tre-internal)"
+        }
+      },
+      "Next": "Unhandled Event"
+    },
+    "bagit-validated -> Slack": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -262,22 +273,18 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "success",
-          "Event": "Completed successfully"
+          "Event.$": "$.producer.event-name"
         }
       },
       "End": true
     },
-    "TDR SQS Retry Files": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sqs:sendMessage",
-      "Parameters": {
-        "MessageBody.$": "$",
-        "QueueUrl": "${url_tdr_sqs_retry}"
-      },
-      "Next": "Slack Alert TDR Retry Files",
-      "ResultPath": null
+    "Unhandled Event": {
+      "Type": "Fail"
     },
-    "Slack Alert TDR Retry Files": {
+    "Files Checksum Validation Failed": {
+      "Type": "Fail"
+    },
+    "bagit-validation-error -> Slack": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -286,24 +293,11 @@
           "Execution.$": "$$.Execution.Name",
           "StateMachine.$": "$$.StateMachine.Name",
           "Status": "warning",
-          "ErrorMessage.$": "$.parameters.bagit-validated.errors",
-          "Event": "TDR Files Error"
+          "ErrorMessage.$": "$.parameters",
+          "Event.$": "$.producer.event-name"
         }
       },
       "End": true
-    },
-    "Format Files Checksum Error": {
-      "Type": "Pass",
-      "Next": "Slack Alert Files Checksum Validation Failed",
-      "Parameters": {
-        "Execution.$": "$$.Execution.Name",
-        "StateMachine.$": "$$.StateMachine.Name",
-        "ErrorType.$": "$$.State.Name",
-        "ErrorMessage.$": "$.parameters.bagit-validated.errors"
-      }
-    },
-    "Files Checksum Validation Failed": {
-      "Type": "Fail"
     }
   }
 }
