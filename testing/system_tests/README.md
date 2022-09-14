@@ -5,29 +5,15 @@ one or more processes.
 
 ## Pre-requisites
 
-To install required libraries:
+To install required dependencies:
 
 ```bash
-# Create a new Python virtual environment
+# Create and activate a Python virtual environment
 python3 -m venv .venv
 . ./.venv/bin/activate
 
-# Install library required for building Python packages 
-pip3 install wheel
-
-# Install AWS API
-pip3 install boto3
-
-# Build and install the aws_test_lib (using "()" to avoid losing current dir)
-( \
-    cd "../aws_test_lib" \
-    && ./build.sh \
-    && ./reinstall.sh \
-)
-
-# Build the tre_event_lib from git and install it
-tre_event_lib_tag='0.0.3-alpha'
-./install_tre_event_lib.sh "${tre_event_lib_tag}"
+# Install dependent libraries (builds some; e.g. tre_event_lib 0.0.3-alpha)
+./dependency_setup.sh 0.0.3-alpha
 ```
 
 # test_bagit_available_to_sip_ok.py

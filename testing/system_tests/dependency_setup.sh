@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Build and install tre_event_lib (it's not currently in an artifact store).
+# Setup Python virtual environment with libraries required by system test. 
 set -e
 
-function main {
+function build_and_install_tre_event_lib {
     if [ $# -ne 1 ]; then
         printf 'Usage: build_tag\n' 1>&2
         exit 1
@@ -35,7 +35,7 @@ function main {
 
     ( \
         cd "${build_root}" \
-        && pip3 install --requirement requirements.txt \
+        && pip3 --require-virtualenv install --requirement requirements.txt \
         && ./build.sh \
     )
 
@@ -44,6 +44,32 @@ function main {
     pkg_whl_file="$(find "${build_root}/dist" -name "*.whl")"
     printf 'run: pip3 --require-virtualenv install "%s"' "${pkg_whl_file}"
     pip3 --require-virtualenv install "${pkg_whl_file:?}"
+}
+
+function main {
+    if [ $# -ne 1 ]; then
+        printf 'Usage: build_tag\n' 1>&2
+        exit 1
+    fi
+
+    local tre_event_lib_tag="${1:?}"
+
+    # Install library required for building Python packages 
+    pip3 --require-virtualenv install wheel
+
+    # Install AWS API
+    pip3 --require-virtualenv install boto3
+
+    # Build and install the aws_test_lib (using "()" to avoid losing current dir)
+    ( \
+        cd "../aws_test_lib" \
+        && ./build.sh \
+        && ./reinstall.sh \
+    )
+
+    # Build the tre_event_lib from git and install it
+    build_and_install_tre_event_lib "${tre_event_lib_tag}"
+    pip3 list
     printf 'Completed OK\n'
 }
 
