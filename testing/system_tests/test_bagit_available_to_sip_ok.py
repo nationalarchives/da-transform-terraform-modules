@@ -9,7 +9,6 @@ import logging
 import argparse
 import json
 from datetime import datetime, timezone
-from tkinter import SEPARATOR
 from aws_test_lib.aws_tester import AWSTester
 from tre_event_lib import tre_event_api
 
