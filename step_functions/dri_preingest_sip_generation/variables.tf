@@ -33,7 +33,7 @@ variable "dpsg_image_versions" {
   })
 }
 
-variable "common_tre_out_topic_arn" {
+variable "common_tre_internal_topic_arn" {
   description = "The TRE out SNS topic ARN"
   type = string
 }
