@@ -54,11 +54,8 @@ function main {
 
     local tre_event_lib_tag="${1:?}"
 
-    # Install library required for building Python packages 
-    pip3 --require-virtualenv install wheel
-
-    # Install AWS API
-    pip3 --require-virtualenv install boto3
+    # Install required external libraries required for building Python packages 
+    pip3 --require-virtualenv install --requirement requirements.txt
 
     # Build and install the aws_test_lib (using "()" to avoid losing current dir)
     ( \
