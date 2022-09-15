@@ -57,3 +57,6 @@ build/
 
 # IDE config files
 /.vscode
+
+# Test directories
+.tmp*/

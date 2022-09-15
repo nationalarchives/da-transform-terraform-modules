@@ -8,6 +8,9 @@ Run the following test steps:
 import logging
 import argparse
 import json
+import os
+import hashlib
+import requests
 from datetime import datetime, timezone
 from aws_test_lib.aws_tester import AWSTester
 from tre_event_lib import tre_event_api
@@ -29,7 +32,7 @@ VB_STEP_NAME_FILES = 'Files Checksum Validation'
 VB_STEP_NAME_END_OK = 'bagit-validated -> Slack'
 
 DPSG_STEP_NAME_START = 'BagIt To DRI SIP'
-DPSG_STEP_NAME_END_OK = 'Slack Alert BagIt To DRI SIP Success'
+DPSG_STEP_NAME_END_OK = 'dri-preingest-sip-available -> Slack'
 
 SEPARATOR = '#' * 80
 
@@ -204,22 +207,43 @@ def validate_vb(
     """
     Check the results from a `validate-bagit` flow are valid.
     """
-    vb_step_end_output = step_results[VB_STEP_NAME_END_OK]['input']
-    assert 'version' in vb_step_end_output, 'Missing version'
-    assert 'timestamp' in vb_step_end_output, 'Missing timestamp'
-    assert 'UUIDs' in vb_step_end_output, 'Missing UUIDs'
-    assert 'parameters' in vb_step_end_output, 'Missing parameters'
-    vb_parameters = vb_step_end_output['parameters']['bagit-validated']
-    assert vb_parameters['s3-bucket'] == expected_s3_bucket, 'Invalid s3-bucket value'
-    assert 'reference' in vb_parameters, 'reference key is missing'
-    assert 's3-bucket' in vb_parameters, 's3-bucket key is missing'
-    assert 's3-bagit-name' in vb_parameters, 's3-bagit-name key is missing'
-    assert 's3-object-root' in vb_parameters, 's3-object-root key is missing'
-    assert 'validated-files' in vb_parameters, 'validated-files key is missing'
-    vb_parameters_vf = vb_parameters['validated-files']
-    assert 'path' in vb_parameters_vf, 'path key is missing'
-    assert 'root' in vb_parameters_vf, 'root key is missing'
-    assert 'data' in vb_parameters_vf, 'data key is missing'
+    step_end_input = step_results[VB_STEP_NAME_END_OK]['input']
+    assert 'version' in step_end_input, 'Missing version'
+    assert 'timestamp' in step_end_input, 'Missing timestamp'
+    assert 'UUIDs' in step_end_input, 'Missing UUIDs'
+    assert 'parameters' in step_end_input, 'Missing parameters'
+    parameters = step_end_input['parameters']['bagit-validated']
+    assert parameters['s3-bucket'] == expected_s3_bucket, 'Invalid s3-bucket value'
+    assert 'reference' in parameters, 'reference key is missing'
+    assert 's3-bucket' in parameters, 's3-bucket key is missing'
+    assert 's3-bagit-name' in parameters, 's3-bagit-name key is missing'
+    assert 's3-object-root' in parameters, 's3-object-root key is missing'
+    assert 'validated-files' in parameters, 'validated-files key is missing'
+    parameters_vf = parameters['validated-files']
+    assert 'path' in parameters_vf, 'path key is missing'
+    assert 'root' in parameters_vf, 'root key is missing'
+    assert 'data' in parameters_vf, 'data key is missing'
+
+
+def save_url_to_file(url: str, output_file: str):
+    logger.info(f'save_url_to_file: url={url} output_file={output_file}')
+    with requests.get(url=url, stream=True) as r:
+        r.raise_for_status()
+        with open(output_file, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+
+def get_sha256(filename: str) -> str:
+    sha256 = hashlib.sha256()
+    with open(filename, 'rb') as fp:
+        while True:
+            block = fp.read(sha256.block_size)
+            if not block:
+                break
+            sha256.update(block)
+
+    return sha256.hexdigest()
 
 
 def validate_dpsg(
@@ -228,11 +252,47 @@ def validate_dpsg(
     """
     Check the results from a `dri-preingest-sip-generation` flow are valid.
     """
-    dpsg_step_end_output = step_results[DPSG_STEP_NAME_END_OK]['output']
-    assert 'version' in dpsg_step_end_output, 'Missing version'
-    assert 'timestamp' in dpsg_step_end_output, 'Missing timestamp'
-    assert 'UUIDs' in dpsg_step_end_output, 'Missing UUIDs'
-    assert 'parameters' in dpsg_step_end_output, 'Missing parameters'
+    KEY_URL_ARCHIVE = 's3-folder-url'
+    KEY_URL_CHECKSUM = 's3-sha256-url'
+
+    step_end_input = step_results[DPSG_STEP_NAME_END_OK]['input']
+    assert 'version' in step_end_input, 'Missing version'
+    assert 'timestamp' in step_end_input, 'Missing timestamp'
+    assert 'UUIDs' in step_end_input, 'Missing UUIDs'
+    assert 'parameters' in step_end_input, 'Missing parameters'
+
+    parameters = step_end_input['parameters']['dri-preingest-sip-available']
+    assert 'reference' in parameters, 'reference key is missing'
+    assert KEY_URL_ARCHIVE in parameters, f'{KEY_URL_ARCHIVE} key is missing'
+    assert KEY_URL_CHECKSUM in parameters, f'{KEY_URL_CHECKSUM} key is missing'
+    assert 'file-type' in parameters, 'file-type key is missing'
+
+    tmp_dir = f'.tmp-test-output-{datetime.now(tz=timezone.utc).isoformat()}'
+    if os.path.exists(tmp_dir):
+        raise ValueError(f'Temporary output dir "{tmp_dir}" already exists')    
+    os.makedirs(tmp_dir)
+
+    local_checksum_file = os.path.join(tmp_dir, KEY_URL_CHECKSUM)
+    save_url_to_file(
+        url=parameters[KEY_URL_CHECKSUM],
+        output_file=local_checksum_file)
+
+    checksum_file_content = None
+    with open(local_checksum_file, 'r') as fp:
+        checksum_file_content = fp.read()
+    
+    expected_sha256 = checksum_file_content.strip().split()[0]
+    logger.info('expected_sha256=%s', expected_sha256)
+
+    local_archive_file = os.path.join(tmp_dir, KEY_URL_ARCHIVE)
+    save_url_to_file(
+        url=parameters[KEY_URL_ARCHIVE],
+        output_file=local_archive_file)
+
+    calculated_sha256 = get_sha256(filename=local_archive_file)
+    logger.info('calculated_sha256=%s', calculated_sha256)
+
+    assert expected_sha256 == calculated_sha256, 'Calculated sha256 did not match source sha256'
 
 
 def main(
