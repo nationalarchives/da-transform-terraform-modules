@@ -10,7 +10,7 @@ resource "aws_lambda_function" "bagit_to_dri_sip" {
       "S3_DRI_OUT_BUCKET" = aws_s3_bucket.dpsg_out.bucket
       "TRE_ENVIRONMENT" =	var.env
       "TRE_PRESIGNED_URL_EXPIRY" = 60
-      "TRE_PROCESS_NAME" = local.lambda_name_bagit_to_dri_sip
+      "TRE_PROCESS_NAME" = local.step_function_name
       "TRE_SYSTEM_NAME" = upper(var.prefix)
     }
   }
