@@ -1,14 +1,17 @@
 resource "aws_lambda_function" "bagit_to_dri_sip" {
   image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-bagit-to-dri-sip:${var.dpsg_image_versions.tre_bagit_to_dri_sip}"
   package_type = "Image"
-  function_name = "${var.env}-${var.prefix}-bagit-to-dri-sip"
+  function_name = local.lambda_name_bagit_to_dri_sip
   role = aws_iam_role.dri_preingest_sip_generation_lambda_role.arn
   timeout = 300
 
   environment {
     variables = {
       "S3_DRI_OUT_BUCKET" = aws_s3_bucket.dpsg_out.bucket
+      "TRE_ENVIRONMENT" =	var.env
       "TRE_PRESIGNED_URL_EXPIRY" = 60
+      "TRE_PROCESS_NAME" = local.lambda_name_bagit_to_dri_sip
+      "TRE_SYSTEM_NAME" = upper(var.prefix)
     }
   }
 }
@@ -19,7 +22,7 @@ resource "aws_lambda_function" "dpsg_trigger" {
   // IAMGE URI REPO TBC
   image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.dpsg_image_versions.tre_sqs_sf_trigger}"
   package_type = "Image"
-  function_name = "${var.env}-${var.prefix}-dpsg-trigger"
+  function_name = local.lambda_name_trigger
   role = aws_iam_role.dpsg_trigger.arn
   timeout = 30
 
