@@ -12,8 +12,8 @@ To install required dependencies:
 python3 -m venv .venv
 . ./.venv/bin/activate
 
-# Install dependent libraries (builds some; e.g. tre_event_lib 0.0.3-alpha)
-./dependency_setup.sh 0.0.3-alpha
+# Install dependent libraries (builds some; e.g. tre_event_lib 0.0.7-alpha)
+./dependency_setup.sh 0.0.7-alpha
 ```
 
 # test_bagit_available_to_sip_ok.py
@@ -21,8 +21,13 @@ python3 -m venv .venv
 This test performs the following actions:
 
 * Submits a `bagit-available` event to `${env}-tre-in` for the given consignment
-* Confirms Step Function `${env}-tre-validate-bagit` runs OK 
+* Confirms Step Function `${env}-tre-validate-bagit` runs OK
+  * Checks event keys
 * Confirms Step Function `${env}-dri-preingest-sip-generation` runs OK
+  * Checks event keys
+  * Downloads output archive
+  * Downloads output archive checksum file
+  * Confirms downloaded archive's checksum matches that in checksum file
 
 To run the test:
 
