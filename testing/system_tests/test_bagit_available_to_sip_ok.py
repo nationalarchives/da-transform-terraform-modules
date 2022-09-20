@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 SOURCE_PRODUCER = 'test-producer'
 SOURCE_PROCESS = 'test-process'
-SOURCE_CONSIGNMENT_TYPE = 'standard'
 
 VB_STEP_NAME_BAGIT = 'BagIt Checksum Validation'
 VB_STEP_NAME_FILES = 'Files Checksum Validation'
@@ -300,6 +299,7 @@ def main(
         aws_profile_deployment: str,
         environment_name: str,
         test_consignment_ref: str,
+        test_consignment_type: str,
         test_consignment_s3_bucket: str,
         test_consignment_archive_s3_path: str,
         test_consignment_checksum_s3_path: str
@@ -329,7 +329,7 @@ def main(
         sns_topic_name=tre_in_topic,
         environment_name=environment_name,
         test_consignment_ref=test_consignment_ref,
-        test_consignment_type=SOURCE_CONSIGNMENT_TYPE,
+        test_consignment_type=test_consignment_type,
         test_consignment_s3_bucket=test_consignment_s3_bucket,
         test_consignment_archive_s3_path=test_consignment_archive_s3_path,
         test_consignment_checksum_s3_path=test_consignment_checksum_s3_path)
@@ -402,6 +402,8 @@ if __name__ == "__main__":
         help='S3 path of the test consignment checksum (tar.gz.sha256)')
     parser.add_argument('--test_consignment_ref', type=str, required=True,
         help='The consignment reference to use for the tests')
+    parser.add_argument('--test_consignment_type', type=str, default='standard',
+        help='The consignment reference type for the event (standard to pass)')
 
     args = parser.parse_args()
 
@@ -410,6 +412,7 @@ if __name__ == "__main__":
         aws_profile_deployment=args.aws_profile_deployment,
         environment_name=args.environment_name,
         test_consignment_ref=args.test_consignment_ref,
+        test_consignment_type=args.test_consignment_type,
         test_consignment_s3_bucket=args.test_consignment_s3_bucket,
         test_consignment_archive_s3_path=args.test_consignment_archive_s3_path,
         test_consignment_checksum_s3_path=args.test_consignment_checksum_s3_path
