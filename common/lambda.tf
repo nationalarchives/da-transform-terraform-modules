@@ -48,7 +48,7 @@ resource "aws_lambda_function" "tre_forward" {
   }
 }
 
-resource "aws_lambda_event_source_mapping" "vb_in_sqs" {
+resource "aws_lambda_event_source_mapping" "tre_forward_sqs" {
   batch_size                         = 3
   function_name                      = aws_lambda_function.tre_forward.function_name
   event_source_arn                   = aws_sqs_queue.tre_forward.arn
