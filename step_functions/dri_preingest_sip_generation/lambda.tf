@@ -36,7 +36,7 @@ resource "aws_lambda_function" "dpsg_trigger" {
 }
 
 resource "aws_lambda_event_source_mapping" "dpsg_in_sqs" {
-  batch_size = 10
+  batch_size = 1
   function_name = aws_lambda_function.dpsg_trigger.function_name
   event_source_arn = aws_sqs_queue.tre_dpsg_in.arn
   maximum_batching_window_in_seconds = 0
