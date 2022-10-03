@@ -51,7 +51,7 @@ resource "aws_lambda_function" "vb_files_checksum_validation" {
 
 # vb_step_function_trigger
 resource "aws_lambda_function" "vb_trigger" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-vb-trigger:${var.vb_image_versions.tre_vb_trigger}"
+  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.vb_image_versions.tre_sqs_sf_trigger}"
   package_type = "Image"
   function_name = local.lambda_name_trigger
   role = aws_iam_role.vb_trigger_lambda.arn
@@ -66,7 +66,7 @@ resource "aws_lambda_function" "vb_trigger" {
 }
 
 resource "aws_lambda_event_source_mapping" "vb_in_sqs" {
-  batch_size                         = 3
+  batch_size                         = 1
   function_name                      = aws_lambda_function.vb_trigger.function_name
   event_source_arn                   = aws_sqs_queue.tre_vb_in.arn
   maximum_batching_window_in_seconds = 0
