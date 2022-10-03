@@ -16,14 +16,14 @@ resource "aws_lambda_function" "tdr_message_function" {
 }
 
 resource "aws_lambda_event_source_mapping" "tdr_message_sqs" {
-  batch_size                         = 3
+  batch_size                         = 1
   function_name                      = aws_lambda_function.tdr_message_function.function_name
   event_source_arn                   = aws_sqs_queue.tdr_message_queue.arn
   maximum_batching_window_in_seconds = 0
 }
 
 resource "aws_lambda_event_source_mapping" "editorial_message_sqs" {
-  batch_size                         = 3
+  batch_size                         = 1
   function_name                      = aws_lambda_function.tdr_message_function.function_name
   event_source_arn                   = aws_sqs_queue.editorial_message_queue.arn
   maximum_batching_window_in_seconds = 0
