@@ -27,10 +27,10 @@ resource "aws_sns_topic_policy" "tre_in" {
 }
 
 resource "aws_sns_topic_subscription" "tre_in" {
-  for_each      = { for sub in var.tre_in_subscriptions : sub.name => sub }
-  topic_arn     = aws_sns_topic.tre_in.arn
-  protocol      = each.value.protocol
-  endpoint      = each.value.endpoint
+  for_each  = { for sub in var.tre_in_subscriptions : sub.name => sub }
+  topic_arn = aws_sns_topic.tre_in.arn
+  protocol  = each.value.protocol
+  endpoint  = each.value.endpoint
 }
 
 # TRE Internal SNS Topic
@@ -66,8 +66,8 @@ resource "aws_sns_topic_policy" "tre_out" {
 }
 
 resource "aws_sns_topic_subscription" "tre_out" {
-  for_each      = { for sub in var.tre_out_subscriptions : sub.name => sub }
-  topic_arn     = aws_sns_topic.tre_out.arn
-  protocol      = each.value.protocol
-  endpoint      = each.value.endpoint
+  for_each  = { for sub in var.tre_out_subscriptions : sub.name => sub }
+  topic_arn = aws_sns_topic.tre_out.arn
+  protocol  = each.value.protocol
+  endpoint  = each.value.endpoint
 }

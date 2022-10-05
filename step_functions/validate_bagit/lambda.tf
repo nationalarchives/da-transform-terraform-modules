@@ -7,14 +7,14 @@ resource "aws_lambda_function" "vb_bagit_checksum_validation" {
 
   environment {
     variables = {
-      "TRE_S3_BUCKET" = var.tre_data_bucket
-      "TRE_SF_VERSION" = var.vb_version
-      "TRE_LAMBDA_VERSIONS" = jsonencode(var.vb_image_versions)
-      "TRE_SYSTEM_NAME" = upper(var.prefix)
-      "TRE_PROCESS_NAME" = local.step_function_name
-      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_S3_BUCKET"            = var.tre_data_bucket
+      "TRE_SF_VERSION"           = var.vb_version
+      "TRE_LAMBDA_VERSIONS"      = jsonencode(var.vb_image_versions)
+      "TRE_SYSTEM_NAME"          = upper(var.prefix)
+      "TRE_PROCESS_NAME"         = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME"   = local.step_function_name
       "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_bagit_validation
-      "TRE_ENVIRONMENT" = var.env
+      "TRE_ENVIRONMENT"          = var.env
     }
   }
 
@@ -32,14 +32,14 @@ resource "aws_lambda_function" "vb_files_checksum_validation" {
 
   environment {
     variables = {
-      "TRE_S3_BUCKET" = var.tre_data_bucket
-      "TRE_SF_VERSION" = var.vb_version
-      "TRE_LAMBDA_VERSIONS" = jsonencode(var.vb_image_versions)
-      "TRE_SYSTEM_NAME" = upper(var.prefix)
-      "TRE_PROCESS_NAME" = local.step_function_name
-      "TRE_STEP_FUNCTION_NAME" = local.step_function_name
+      "TRE_S3_BUCKET"            = var.tre_data_bucket
+      "TRE_SF_VERSION"           = var.vb_version
+      "TRE_LAMBDA_VERSIONS"      = jsonencode(var.vb_image_versions)
+      "TRE_SYSTEM_NAME"          = upper(var.prefix)
+      "TRE_PROCESS_NAME"         = local.step_function_name
+      "TRE_STEP_FUNCTION_NAME"   = local.step_function_name
       "TRE_LAMBDA_FUNCTION_NAME" = local.lambda_name_files_validation
-      "TRE_ENVIRONMENT" = var.env
+      "TRE_ENVIRONMENT"          = var.env
     }
   }
 
@@ -51,15 +51,15 @@ resource "aws_lambda_function" "vb_files_checksum_validation" {
 
 # vb_step_function_trigger
 resource "aws_lambda_function" "vb_trigger" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-vb-trigger:${var.vb_image_versions.tre_vb_trigger}"
-  package_type = "Image"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-vb-trigger:${var.vb_image_versions.tre_vb_trigger}"
+  package_type  = "Image"
   function_name = local.lambda_name_trigger
-  role = aws_iam_role.vb_trigger_lambda.arn
-  timeout = 30
+  role          = aws_iam_role.vb_trigger_lambda.arn
+  timeout       = 30
 
   environment {
     variables = {
-      "TRE_STATE_MACHINE_ARN" = aws_sfn_state_machine.validate_bagit.arn
+      "TRE_STATE_MACHINE_ARN"    = aws_sfn_state_machine.validate_bagit.arn
       "TRE_CONSIGNMENT_KEY_PATH" = "parameters.bagit-available.reference"
     }
   }
