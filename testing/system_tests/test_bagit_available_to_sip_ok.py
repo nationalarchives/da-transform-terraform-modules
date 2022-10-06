@@ -28,7 +28,7 @@ SOURCE_PROCESS = 'test-process'
 
 VB_STEP_NAME_BAGIT = 'BagIt Checksum Validation'
 VB_STEP_NAME_FILES = 'Files Checksum Validation'
-VB_STEP_NAME_END_OK = 'bagit-validated -> Slack'
+VB_STEP_NAME_END_OK = 'bagit-validated'
 
 DPSG_STEP_NAME_START = 'BagIt To DRI SIP'
 DPSG_STEP_NAME_END_OK = 'dri-preingest-sip-available -> Slack'
