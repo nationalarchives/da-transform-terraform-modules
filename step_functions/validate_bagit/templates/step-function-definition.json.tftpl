@@ -135,18 +135,16 @@
       "Type": "Choice",
       "Choices": [
         {
-          "Or": [
-            {
-              "Variable": "$.producer.event-name",
-              "StringEquals": "bagit-validated"
-            },
-            {
-              "Variable": "$.producer.event-name",
-              "StringEquals": "bagit-validation-error"
-            }
-          ],
-          "Comment": "bagit-validated or bagit-validation-error",
+          "Variable": "$.producer.event-name",
+          "StringEquals": "bagit-validated",
+          "Comment": "bagit-validated",
           "Next": "SNS tre-internal"
+        },
+        {
+          "Variable": "$.producer.event-name",
+          "StringEquals": "bagit-validation-error",
+          "Next": "SNS tre-internal",
+          "Comment": "bagit-validation-error"
         }
       ],
       "Default": "Files Unhandled Event -> Slack"
@@ -207,17 +205,23 @@
         {
           "Variable": "$.producer.event-name",
           "StringEquals": "bagit-validated",
-          "Next": "bagit-validated -> Slack",
-          "Comment": "bagit-validated"
+          "Comment": "bagit-validated",
+          "Next": "bagit-validated"
         },
         {
           "Variable": "$.producer.event-name",
           "StringEquals": "bagit-validation-error",
-          "Next": "bagit-validation-error -> Slack",
-          "Comment": "bagit-validation-error"
+          "Comment": "bagit-validation-error",
+          "Next": "bagit-validation-error"
         }
       ],
       "Default": "Unhandled Event -> Slack"
+    },
+    "bagit-validation-error": {
+      "Type": "Succeed"
+    },
+    "bagit-validated": {
+      "Type": "Succeed"
     },
     "Unhandled Event -> Slack": {
       "Type": "Task",
@@ -234,40 +238,11 @@
       },
       "Next": "Unhandled Event"
     },
-    "bagit-validated -> Slack": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {
-        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
-        "Message": {
-          "Execution.$": "$$.Execution.Name",
-          "StateMachine.$": "$$.StateMachine.Name",
-          "Status": "success",
-          "Event.$": "$.producer.event-name"
-        }
-      },
-      "End": true
-    },
     "Unhandled Event": {
       "Type": "Fail"
     },
     "Files Checksum Validation Failed": {
       "Type": "Fail"
-    },
-    "bagit-validation-error -> Slack": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {
-        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
-        "Message": {
-          "Execution.$": "$$.Execution.Name",
-          "StateMachine.$": "$$.StateMachine.Name",
-          "Status": "warning",
-          "ErrorMessage.$": "$.parameters",
-          "Event.$": "$.producer.event-name"
-        }
-      },
-      "End": true
     }
   }
 }
