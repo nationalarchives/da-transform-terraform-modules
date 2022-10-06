@@ -19,7 +19,7 @@ resource "aws_sqs_queue" "tre_forward_deadletter" {
 
 resource "aws_lambda_event_source_mapping" "tre_forward_dlq" {
   batch_size                         = 1
-  function_name                      = aws_lambda_function.tre_dlq_alerts.function_name
+  function_name                      = aws_lambda_function.tre_dlq_slack_alerts.function_name
   event_source_arn                   = aws_sqs_queue.tre_forward_deadletter.arn
   maximum_batching_window_in_seconds = 0
 }
