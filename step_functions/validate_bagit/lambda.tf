@@ -51,8 +51,8 @@ resource "aws_lambda_function" "vb_files_checksum_validation" {
 
 # vb_step_function_trigger
 resource "aws_lambda_function" "vb_trigger" {
-  image_uri = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.vb_image_versions.tre_sqs_sf_trigger}"
-  package_type = "Image"
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-sqs-sf-trigger:${var.vb_image_versions.tre_sqs_sf_trigger}"
+  package_type  = "Image"
   function_name = local.lambda_name_trigger
   role          = aws_iam_role.vb_trigger_lambda.arn
   timeout       = 30
