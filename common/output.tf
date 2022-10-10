@@ -24,6 +24,11 @@ output "tre_forward_lambda_arn" {
 }
 
 output "tre_forward_queue_arn" {
-  value = aws_sqs_queue.tre_forward.arn
+  value       = aws_sqs_queue.tre_forward.arn
   description = "TRE Forward SQS Queue ARN"
+}
+
+output "tre_dlq_alerts_lambda_function_name" {
+  value       = aws_lambda_function.tre_dlq_slack_alerts.function_name
+  description = "TRE DLQ Alerts Lambda Function Name"
 }

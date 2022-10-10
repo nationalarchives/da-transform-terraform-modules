@@ -15,13 +15,14 @@ variable "account_id" {
 
 variable "common_version" {
   description = "(Updates if Common TRE Lambda function versions change)"
-  type = string
+  type        = string
 }
 variable "common_image_versions" {
   description = "Latest version of Images for Lambda Functions"
   type = object({
-    tre_slack_alerts = string
-    tre_forward      = string
+    tre_slack_alerts     = string
+    tre_forward          = string
+    tre_dlq_slack_alerts = string
   })
 }
 
@@ -68,9 +69,9 @@ variable "tre_out_publishers" {
 variable "tre_in_subscriptions" {
   description = "List tre-in topic subscriptions"
   type = list(object({
-    name          = string
-    endpoint      = string
-    protocol      = string
+    name     = string
+    endpoint = string
+    protocol = string
   }))
 }
 
@@ -87,8 +88,8 @@ variable "tre_internal_subscriptions" {
 variable "tre_out_subscriptions" {
   description = "List tre-out topic subscriptions"
   type = list(object({
-    name          = string
-    endpoint      = string
-    protocol      = string
+    name     = string
+    endpoint = string
+    protocol = string
   }))
 }
