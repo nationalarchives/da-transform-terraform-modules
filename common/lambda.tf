@@ -26,6 +26,27 @@ resource "aws_lambda_permission" "common_tre_slack_alerts_sns_trigger_permission
   source_arn    = aws_sns_topic.common_tre_slack_alerts.arn
 }
 
+# TRE dlq alerts
+
+resource "aws_lambda_function" "tre_dlq_slack_alerts" {
+  image_uri     = "${var.account_id}.dkr.ecr.eu-west-2.amazonaws.com/lambda_functions/tre-dlq-slack-alerts:${var.common_image_versions.tre_dlq_slack_alerts}"
+  package_type  = "Image"
+  function_name = "${var.env}-${var.prefix}-dlq-slack-alerts"
+  role          = aws_iam_role.tre_dlq_alerts_lambda.arn
+  timeout       = 30
+  environment {
+    variables = {
+      "SLACK_WEBHOOK_URL" = var.slack_webhook_url
+      "ENV"               = var.env
+      "SLACK_CHANNEL"     = var.slack_channel
+      "SLACK_USERNAME"    = var.slack_username
+    }
+  }
+  tags = {
+    "ApplicationType" = "Python"
+  }
+}
+
 # TRE-Forward Lambda
 
 resource "aws_lambda_function" "tre_forward" {

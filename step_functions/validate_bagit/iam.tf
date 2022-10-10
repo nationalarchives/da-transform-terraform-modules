@@ -1,10 +1,10 @@
 # Step Function Roles and Policies
 
 resource "aws_iam_role" "validate_bagit" {
-  name = "${local.step_function_name}-role"
+  name               = "${local.step_function_name}-role"
   assume_role_policy = data.aws_iam_policy_document.validate_bagit_assume_role_policy.json
   inline_policy {
-    name = "${local.step_function_name}-policies"
+    name   = "${local.step_function_name}-policies"
     policy = data.aws_iam_policy_document.validate_bagit_machine_policies.json
   }
 }
@@ -50,12 +50,12 @@ data "aws_iam_policy_document" "validate_bagit_machine_policies" {
   }
 
   statement {
-    sid = "InvokeLambdaPolicy"
-    effect = "Allow"
-    actions = [ "lambda:InvokeFunction" ]
+    sid     = "InvokeLambdaPolicy"
+    effect  = "Allow"
+    actions = ["lambda:InvokeFunction"]
     resources = [
-        aws_lambda_function.vb_bagit_checksum_validation.arn,
-        aws_lambda_function.vb_files_checksum_validation.arn
+      aws_lambda_function.vb_bagit_checksum_validation.arn,
+      aws_lambda_function.vb_files_checksum_validation.arn
     ]
   }
 
@@ -81,16 +81,16 @@ resource "aws_iam_role_policy_attachment" "validate_bagit_lambda_role_policy" {
 }
 
 resource "aws_iam_role" "vb_trigger_lambda" {
-  name = "${var.env}-${var.prefix}-vb-trigger-lambda-role"
+  name               = "${var.env}-${var.prefix}-vb-trigger-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
   inline_policy {
-    name = "${var.env}-${var.prefix}-vb-trigger"
+    name   = "${var.env}-${var.prefix}-vb-trigger"
     policy = data.aws_iam_policy_document.vb_trigger.json
   }
 }
 
 resource "aws_iam_role_policy_attachment" "vb_trigger_lambda_sqs" {
-  role = aws_iam_role.vb_trigger_lambda.name
+  role       = aws_iam_role.vb_trigger_lambda.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 }
 
@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "vb_trigger" {
   statement {
     actions   = ["states:StartExecution"]
     effect    = "Allow"
-    resources = [ aws_sfn_state_machine.validate_bagit.arn ]
+    resources = [aws_sfn_state_machine.validate_bagit.arn]
   }
 }
 

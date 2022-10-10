@@ -89,6 +89,17 @@ resource "aws_iam_role_policy_attachment" "tre_forward_lambda_xray_policy" {
   role       = aws_iam_role.tre_forward_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
+
+resource "aws_iam_role" "tre_dlq_alerts_lambda" {
+  name               = "${var.env}-${var.prefix}-dlq-alerts-lambda"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "tre_dlq_alerts_lambda" {
+  role       = aws_iam_role.tre_dlq_alerts_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+}
+
 # S3 Policy
 
 data "aws_iam_policy_document" "common_tre_data_bucket" {
