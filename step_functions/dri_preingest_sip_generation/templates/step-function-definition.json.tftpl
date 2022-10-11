@@ -87,22 +87,22 @@
       "Type": "Choice",
       "Choices": [
         {
-          "Variable": "$.producer.event-name",
-          "StringEquals": "dri-preingest-sip-error",
-          "Next": "Success"
-        },
-        {
-          "Variable": "$.producer.event-name",
-          "StringEquals": "dri-preingest-sip-available",
+          "Or": [
+            {
+              "Variable": "$.producer.event-name",
+              "StringEquals": "dri-preingest-sip-error"
+            },
+            {
+              "Variable": "$.producer.event-name",
+              "StringEquals": "dri-preingest-sip-available"
+            }
+          ],
           "Next": "Success"
         }
       ],
       "Default": "Unhandled Event -> Slack"
     },
     "Success": {
-      "Type": "Succeed"
-    },
-    "Success (1)": {
       "Type": "Succeed"
     },
     "Bagit To DRI SIP Unhandled Event -> Slack": {
