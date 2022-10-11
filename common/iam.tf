@@ -55,20 +55,6 @@ data "aws_iam_policy_document" "tre_out_topic_policy" {
       resources = [aws_sns_topic.tre_out.arn]
     }
   }
-
-  # statement {
-  #   sid = "DRI-Subscribers"
-  #   actions = [ "sns:Subscribe" ]
-  #   effect = "Allow"
-  #   principals {
-  #     type = "AWS"
-  #     identifiers = ""
-  #   }
-  #   condition {
-      
-  #   }
-  #   resources = [aws_sns_topic.tre_out.arn]
-  # }
 }
 
 data "aws_iam_policy_document" "tre_internal_topic_policy" {
