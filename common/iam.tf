@@ -36,6 +36,25 @@ data "aws_iam_policy_document" "tre_out_topic_policy" {
     }
     resources = [aws_sns_topic.tre_out.arn]
   }
+
+  dynamic "statement" {
+    for_each = var.tre_out_subscribers
+    content {
+      sid = statement.value["sid"]
+      actions = [ "sns:Subscribe" ]
+      effect = "Allow"
+      principals {
+        type = "AWS"
+        identifiers = statement.value["subscriber"]
+      }
+      condition {
+        test = "StringEquals"
+        variable = "sns:Endpoint"
+        values = statement.value["endpoint_arn"]
+      }
+      resources = [aws_sns_topic.tre_out.arn]
+    }
+  }
 }
 
 data "aws_iam_policy_document" "tre_internal_topic_policy" {
