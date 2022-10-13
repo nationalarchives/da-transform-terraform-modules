@@ -184,7 +184,7 @@ data "aws_iam_policy_document" "tre_in_sns_kms_key" {
 
     principals {
       type        = "AWS"
-      identifiers = var.tdr_tre_in_publisher
+      identifiers = var.tre_in_publishers
     }
 
     resources = ["*"]
