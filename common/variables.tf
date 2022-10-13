@@ -96,8 +96,8 @@ variable "tre_out_subscriptions" {
 
 variable "tre_out_subscribers" {
   type = list(object({
-    sid = string
-    subscriber = list(string)
+    sid          = string
+    subscriber   = list(string)
     endpoint_arn = list(string)
   }))
 }
