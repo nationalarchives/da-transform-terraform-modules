@@ -40,17 +40,17 @@ data "aws_iam_policy_document" "tre_out_topic_policy" {
   dynamic "statement" {
     for_each = var.tre_out_subscribers
     content {
-      sid = statement.value["sid"]
-      actions = [ "sns:Subscribe" ]
-      effect = "Allow"
+      sid     = statement.value["sid"]
+      actions = ["sns:Subscribe"]
+      effect  = "Allow"
       principals {
-        type = "AWS"
+        type        = "AWS"
         identifiers = statement.value["subscriber"]
       }
       condition {
-        test = "StringEquals"
+        test     = "StringEquals"
         variable = "sns:Endpoint"
-        values = statement.value["endpoint_arn"]
+        values   = statement.value["endpoint_arn"]
       }
       resources = [aws_sns_topic.tre_out.arn]
     }
@@ -155,5 +155,38 @@ data "aws_iam_policy_document" "tre_forward_queue" {
     resources = [
       aws_sqs_queue.tre_forward.arn
     ]
+  }
+}
+
+# KMS Key Policy
+
+data "aws_iam_policy_document" "tre_in_sns_kms_key" {
+  statement {
+    sid     = "Allow access for Key Administrators"
+    actions = ["kms:*"]
+    effect  = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${var.account_id}:root"]
+    }
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "Allow use of the key"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*"
+    ]
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = var.tre_in_publishers
+    }
+
+    resources = ["*"]
   }
 }

@@ -18,7 +18,7 @@ resource "aws_sns_topic_subscription" "common_tre_slack_alerts" {
 
 resource "aws_sns_topic" "tre_in" {
   name              = "${var.env}-${var.prefix}-in"
-  kms_master_key_id = "alias/aws/sns"
+  kms_master_key_id = aws_kms_key.tre_in_sns.arn
 }
 
 resource "aws_sns_topic_policy" "tre_in" {
