@@ -101,8 +101,3 @@ variable "tre_out_subscribers" {
     endpoint_arn = list(string)
   }))
 }
-
-variable "tdr_tre_in_publisher" {
-  description = "ARN of the Role which is used by TDR to publish message to TRE In"
-  type        = list(string)
-}
