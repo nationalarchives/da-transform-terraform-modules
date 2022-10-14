@@ -87,46 +87,23 @@
       "Type": "Choice",
       "Choices": [
         {
-          "Variable": "$.producer.event-name",
-          "StringEquals": "dri-preingest-sip-error",
-          "Next": "dri-preingest-sip-error -> Slack"
-        },
-        {
-          "Variable": "$.producer.event-name",
-          "StringEquals": "dri-preingest-sip-available",
-          "Next": "dri-preingest-sip-available -> Slack"
+          "Or": [
+            {
+              "Variable": "$.producer.event-name",
+              "StringEquals": "dri-preingest-sip-error"
+            },
+            {
+              "Variable": "$.producer.event-name",
+              "StringEquals": "dri-preingest-sip-available"
+            }
+          ],
+          "Next": "Success"
         }
       ],
       "Default": "Unhandled Event -> Slack"
     },
-    "dri-preingest-sip-error -> Slack": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {
-        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
-        "Message": {
-          "Execution.$": "$$.Execution.Name",
-          "StateMachine.$": "$$.StateMachine.Name",
-          "Status": "warning",
-          "ErrorMessage.$": "$.parameters",
-          "Event.$": "$.producer.event-name"
-        }
-      },
-      "End": true
-    },
-    "dri-preingest-sip-available -> Slack": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {
-        "TopicArn": "${arn_sns_topic_tre_slack_alerts}",
-        "Message": {
-          "Execution.$": "$$.Execution.Name",
-          "StateMachine.$": "$$.StateMachine.Name",
-          "Status": "success",
-          "Event.$": "$.producer.event-name"
-        }
-      },
-      "End": true
+    "Success": {
+      "Type": "Succeed"
     },
     "Bagit To DRI SIP Unhandled Event -> Slack": {
       "Type": "Task",
