@@ -66,7 +66,7 @@ def test_ok_path(
 
         logger.info(f'sns_publish_result={sns_publish_result}')
 
-    execution_detail_key_path='input.parameters.consignment-export.reference'
+    execution_detail_key_path='input.parameters.bagit-available.reference'
     step_function_executions = at_deployment.get_step_function_executions(
         step_function_name=step_function_name,
         from_date=start_dtm,
@@ -96,22 +96,20 @@ def test_ok_path(
     assert 'parameters' in output, 'Missing parameters'
     
     parameters_tre = output['parameters']['bagit-validated']
-    assert len(parameters_tre['errors']) == 0, 'Error count > 0'
+    assert parameters_tre.get("errors") is None, 'Error count > 0'
     assert parameters_tre['s3-bucket'] == s3_output_bucket, 'Invalid s3-bucket value'
     assert 's3-object-root' in parameters_tre, f's3-object-root key is missing'
     assert 's3-bagit-name' in parameters_tre, f's3-bagit-name key is missing'
 
     sns_step_result = at_deployment.get_step_function_step_result(
           arn=step_function_executions[0]['executionArn'],
-          step_name='SNS Publish')
-    
+          step_name='SNS tre-internal')
+
     logger.info(f'sns_step_result={sns_step_result}')
 
-    end_step_result = at_deployment.get_step_function_step_result(
-          arn=step_function_executions[0]['executionArn'],
-          step_name='Slack Alert Completed Successfully')
+    step_function_response = step_function_executions[0]['status']
 
-    logger.info(f'end_step_result={end_step_result}')
-    http_status_code = end_step_result['output']['SdkHttpMetadata']['HttpStatusCode']
-    assert http_status_code == 200, f'Expected HTTP status code 200 but got "{http_status_code}"'
+    logger.info(f'end_step_result status code={step_function_response}')
+    assert step_function_response == "SUCCEEDED", f'Expected SUCCEEDED "{step_function_response}"'
     logger.info('test_ok_path completed OK')
+
