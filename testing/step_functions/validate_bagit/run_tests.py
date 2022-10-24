@@ -3,6 +3,7 @@ import logging
 import argparse
 from aws_test_lib.aws_tester import AWSTester
 from tests.test_ok_path import test_ok_path
+from tests.test_bad_paths import test_bad_consignment_type, test_bad_checksum
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,10 +34,38 @@ def main(
     s3_output_bucket = f'{environment_name}-tre-common-data'  # deployment account
 
     logger.info('*' * 130)
+    logger.info(('*' * 50) + ' testing bad checksum for file ' + ('*' * 50))
+    logger.info('*' * 130)
+
+    test_bad_checksum(
+        at_management=at_management,
+        at_deployment=at_deployment,
+        env=environment_name,
+        s3_test_data_bucket=s3_test_data_bucket,
+        s3_output_bucket=s3_output_bucket,
+        sns_input_topic=tre_in_topic
+    )
+    
+    logger.info('*' * 130)
+    logger.info(('*' * 50) + ' testing bad consignment type' + ('*' * 50))
+    logger.info('*' * 130)
+    
+    test_bad_consignment_type(
+        at_management=at_management,
+        at_deployment=at_deployment,
+        env=environment_name,
+        s3_test_data_bucket=s3_test_data_bucket,
+        s3_output_bucket=s3_output_bucket,
+        consignment_ref=judgment_consignment_ref,
+        sns_input_topic=tre_in_topic
+    )
+    
+    
+    logger.info('*' * 130)
     logger.info(('*' * 50) + ' testing judgment consignment ' + ('*' * 50))
     logger.info('*' * 130)
     consignment_type = 'judgment'
-
+    
     test_ok_path(
         at_management=at_management,
         at_deployment=at_deployment,
