@@ -28,12 +28,12 @@ def create_tdr_message(
         'producer': {
             'environment': environment,
             'name': 'TDR',
-            'process': 'da-transform-terraform-modules/testing/step_functions/validate_bagit',
-            'event-name': 'consignment-export',
+            'process': 'tdr-export-process',
+            'event-name': 'bagit-available',
             'type': consignment_type
         },
         'parameters': {
-            'consignment-export': {
+            'bagit-available': {
                 'resource': {
                     'resource-type': 'Object',
                     'access-type': 'url',

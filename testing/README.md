@@ -35,13 +35,15 @@ project's root folder:
 
 ```
 # In project root
-aws_profile_management='...'
-aws_profile_deployment='...'
-test_consignment_ref='...'
+aws_profile_management='tna-acc-manag-admin'
+aws_profile_deployment='tna-acc-dev-admin'
+judgment_consignment_ref='[Judgment_Test_Consigment]'
+standard_consignment_ref='[Standard_Test-Consignment]'
 
 python3 testing/step_functions/validate_bagit/run_tests.py \
   "--aws_profile_management=${aws_profile_management}" \
   "--aws_profile_deployment=${aws_profile_deployment}" \
   --environment_name=dev \
-  "--test_consignment_ref=${test_consignment_ref}"
+  "--judgment_consignment_ref=${judgment_consignment_ref}" \
+  "--standard_consignment_ref=${standard_consignment_ref}"
 ```
