@@ -26,6 +26,8 @@ def test_bad_consignment_type(
         sns_input_topic: str=None  # run step function directly if set to None
 ):
 
+    # Consignment type is spelled incorrectly (in relation to British judicial standards)
+    # to replicate a conceivable error.
     consignment_type = "judgement"
 
     logger.info(f'test_bad_paths start: env={env} '
@@ -118,6 +120,7 @@ def test_bad_checksum(
         sns_input_topic: str=None  # run step function directly if set to None
 ):
 
+    # Parameters set to grab test data that will not match, therefore produce a bagit validation error.
     consignment_ref = 'TDR-2022-CXPN'
     consignment_type = 'standard'
     consignment_path = '-bad-checksum'
@@ -194,8 +197,8 @@ def test_bad_checksum(
     assert 'parameters' in output, 'Missing parameters'
 
     parameters_tre = output['parameters']['bagit-validation-error']
-    assert 'reference' in parameters_tre, f'reference field is empty'
-    assert 'errors' in parameters_tre, f'errors field is missing'
+    assert 'reference' in parameters_tre, 'reference field is empty'
+    assert 'errors' in parameters_tre, 'errors field is missing'
 
     sns_step_result = at_deployment.get_step_function_step_result(
         arn=step_function_executions[0]['executionArn'],
@@ -210,4 +213,3 @@ def test_bad_checksum(
     logger.info('=' * 143)
     logger.info(('=' * 49) + ' check sum missmatch detected - Test Passed ' + ('=' * 50))
     logger.info('=' * 143)
-
