@@ -111,5 +111,10 @@ def test_ok_path(
 
     logger.info(f'end_step_result status code={step_function_response}')
     assert step_function_response == "SUCCEEDED", f'Expected SUCCEEDED "{step_function_response}"'
-    logger.info('test_ok_path completed OK')
+    logger.info('')
+
+    logger.info('=' * 150)
+    logger.info(('=' * 48) + f" test path completed OK for {consignment_type} consignment type " + ('=' * 48))
+    logger.info('=' * 150)
+
 

@@ -98,17 +98,16 @@ def test_bad_consignment_type(
 
     clean_slack_notification = slack_notification.replace('\\', '')
 
-    print("******************************")
-    print(type(clean_slack_notification))
-    print("******************************")
-
     logger.info(f'Error Recorded={clean_slack_notification}')
 
     step_function_response = step_function_executions[0]['status']
 
     logger.info(f'end_step_result status code={step_function_response}')
     assert step_function_response == "FAILED", f'Expected FAILED got : "{step_function_response}"'
-    logger.info('test_bad_consignment_type completed OK')
+    logger.info('=' * 142)
+    logger.info(('=' * 49) + ' Bad consignment type detected - Test Passed ' + ('=' * 50))
+    logger.info('=' * 142)
+
 
 def test_bad_checksum(
         at_management: AWSTester,
@@ -208,5 +207,7 @@ def test_bad_checksum(
 
     logger.info(f'end_step_result status code={step_function_response}')
     assert step_function_response == "SUCCEEDED", f'Expected SUCCEEDED "{step_function_response}"'
-    logger.info('check sum missmatch detected OK')
+    logger.info('=' * 143)
+    logger.info(('=' * 49) + ' check sum missmatch detected - Test Passed ' + ('=' * 50))
+    logger.info('=' * 143)
 
