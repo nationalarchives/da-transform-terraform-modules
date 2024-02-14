@@ -32,37 +32,3 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 }
 
 
-# SQS Queue policy document
-
-data "aws_iam_policy_document" "tdr_sqs_policy" {
-  statement {
-    actions = ["sqs:SendMessage"]
-    effect  = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        var.tdr_role_arn
-      ]
-    }
-    resources = [
-      aws_sqs_queue.tdr_message_queue.arn
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "editorial_sqs_policy" {
-  statement {
-    actions = ["sqs:SendMessage"]
-    effect  = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        var.editorial_role_arn
-      ]
-    }
-    resources = [
-      aws_sqs_queue.editorial_message_queue.arn
-    ]
-  }
-}
-
