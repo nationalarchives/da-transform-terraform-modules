@@ -7,11 +7,6 @@ resource "aws_sqs_queue" "tdr_message_queue" {
   sqs_managed_sse_enabled = true
 }
 
-resource "aws_sqs_queue_policy" "name" {
-  queue_url = aws_sqs_queue.tdr_message_queue.id
-  policy    = data.aws_iam_policy_document.tdr_sqs_policy.json
-}
-
 resource "aws_sqs_queue" "tdr_message_deadletter_queue" {
   name                    = "${var.env}-${var.prefix}-tdr-in-deadletter-queue"
   sqs_managed_sse_enabled = true
@@ -24,11 +19,6 @@ resource "aws_sqs_queue" "editorial_message_queue" {
     maxReceiveCount     = 5
   })
   sqs_managed_sse_enabled = true
-}
-
-resource "aws_sqs_queue_policy" "editorial_message_queue_policy" {
-  queue_url = aws_sqs_queue.editorial_message_queue.id
-  policy    = data.aws_iam_policy_document.editorial_sqs_policy.json
 }
 
 resource "aws_sqs_queue" "editorial_retry_deadletter_queue" {
